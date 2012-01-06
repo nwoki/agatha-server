@@ -38,3 +38,6 @@ target_link_libraries(srvAgatha ${QT_LIBRARIES})
 # tests
 # enable_testing()
 # add_subdirectory(tests)
+
+# test app for sending custom text to srv
+add_subdirectory(testapp)

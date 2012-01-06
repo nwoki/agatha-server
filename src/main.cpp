@@ -19,5 +19,5 @@ int main(int argc, char *argv[])
     /// TODO start server
     Server *srvAgatha = new Server();
 
-    return 0;
+    return app.exec();
 }
