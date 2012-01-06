@@ -14,7 +14,7 @@ Server::Server(QObject *parent)
     : QObject(parent)
     , m_udpSocket(new QUdpSocket(this))
 {
-    m_udpSocket->bind(QHostAddress::LocalHost, 1337);
+    m_udpSocket->bind(QHostAddress::Any, 1337);
 
     // connect on read signals
     connect(m_udpSocket, SIGNAL(readyRead()), this, SLOT(readIncomingData()));
@@ -29,9 +29,9 @@ void Server::readIncomingData()
 {
     QByteArray rcvData;
 
-    while(m_udpSocket->hasPendingDatagrams()) {
-        // read all
-        rcvData.append(m_udpSocket->readLine());
-    }
+    rcvData.resize(m_udpSocket->pendingDatagramSize());
+    m_udpSocket->readDatagram(rcvData.data(), rcvData.size());
+
+    qDebug() << "RCV: " << rcvData;
 }
 

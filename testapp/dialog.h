@@ -7,11 +7,15 @@
  */
 #include <QtGui/QWidget>
 
+/// TODO Icon with player info settings to send to server
+/// TODO Add QJson
+
 namespace Ui {
     class Main;
 }
 
 class QAbstractButton;
+class QUdpSocket;
 
 class Dialog : public QWidget
 {
@@ -25,7 +29,9 @@ private Q_SLOTS:
     void onButtonBoxClicked(QAbstractButton *button);
 
 private:
+    void sendPacketToServer();
     void setupSignalsAndSlots();
 
     Ui::Main *m_ui;
+    QUdpSocket *m_socket;
 };
