@@ -2,7 +2,7 @@
  * srvAgatha
  *
  * This file is part of srvAgatha
- * Copyright (C) 2011 Francesco Nwokeka <francesco.nwokeka@gmail.com>
+ * Copyright (C) 2011-2012 Francesco Nwokeka <francesco.nwokeka@gmail.com>
  *
  */
 

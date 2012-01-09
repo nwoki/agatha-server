@@ -33,6 +33,5 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 # final app
 add_executable(testApp ${testApp_SRCS} ${testApp_MOC_HDRS} ${testApp_FORMS_HDRS})
 
-
 # link app with Qt libs
-target_link_libraries(testApp ${QT_LIBRARIES})
+target_link_libraries(testApp ${QT_LIBRARIES} qjson)

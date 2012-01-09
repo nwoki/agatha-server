@@ -2,13 +2,11 @@
  * srvAgatha
  *
  * This file is part of srvAgatha
- * Copyright (C) 2011 Francesco Nwokeka <francesco.nwokeka@gmail.com>
+ * Copyright (C) 2011-2012 Francesco Nwokeka <francesco.nwokeka@gmail.com>
  *
  */
-#include <QtGui/QWidget>
 
-/// TODO Icon with player info settings to send to server
-/// TODO Add QJson
+#include <QtGui/QWidget>
 
 namespace Ui {
     class Main;
@@ -30,6 +28,8 @@ private Q_SLOTS:
     void onPreviewButtonClicked();
 
 private:
+    QByteArray createPlayerJson();  /** create player json to send to server */
+    QByteArray prepareMessage();    /** prepare json message to send to server */
     void sendPacketToServer();
     void setupSignalsAndSlots();
 

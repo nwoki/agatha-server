@@ -2,13 +2,16 @@
  * srvAgatha
  *
  * This file is part of srvAgatha
- * Copyright (C) 2011 Francesco Nwokeka <francesco.nwokeka@gmail.com>
+ * Copyright (C) 2011-2012 Francesco Nwokeka <francesco.nwokeka@gmail.com>
  *
  */
 
 #include "dialog.h"
 #include "ui_dialog.h"
 
+#include <qjson/serializer.h>
+
+#include <QtCore/QVariantList>
 #include <QtGui/QAbstractButton>
 #include <QtNetwork/QUdpSocket>
 
@@ -36,6 +39,20 @@ Dialog::~Dialog()
     delete m_ui;
 }
 
+QByteArray Dialog::createPlayerJson()
+{
+    QVariantMap player;
+
+    player.insert("nick", m_ui->playerNickLineEdit->text());
+    player.insert("ip", m_ui->playerIpLineEdit->text());
+    player.insert("gear", m_ui->playerGearLineEdit->text());
+    player.insert("weaponMode", m_ui->playerWeaponModeLineEdit->text());
+
+    QJson::Serializer serializer;
+    return serializer.serialize(player);
+}
+
+
 void Dialog::onButtonBoxClicked(QAbstractButton* button)
 {
     QDialogButtonBox::StandardButton butt = m_ui->buttonBox->standardButton(button);
@@ -51,7 +68,22 @@ void Dialog::onButtonBoxClicked(QAbstractButton* button)
 
 void Dialog::onPreviewButtonClicked()
 {
-    /// TODO create QJSon text and show in the textArea
+    if (!m_ui->textEdit->toPlainText().isEmpty()) {
+        m_ui->textEdit->clear();
+    }
+
+    m_ui->textEdit->setText(prepareMessage());
+}
+
+QByteArray Dialog::prepareMessage()
+{
+    QVariantMap preview;
+    preview.insert("game", "URT_411");
+    preview.insert("command", "addPlayer");
+    preview.insert("playerInfo", createPlayerJson());
+
+    QJson::Serializer serializer;
+    return serializer.serialize(preview);
 }
 
 void Dialog::sendPacketToServer()

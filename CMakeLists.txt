@@ -24,7 +24,7 @@ set(srvAgatha_HDRS
 qt4_wrap_cpp(srvAgatha_MOC_HDRS ${srvAgatha_HDRS})
 
 # qjson
-# add_subdirectory(src/qjson/src)
+add_subdirectory(src/qjson/src)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
@@ -33,7 +33,7 @@ add_executable(srvAgatha ${srvAgatha_SRCS} ${srvAgatha_MOC_HDRS})
 
 
 # link lib with Qt libs
-target_link_libraries(srvAgatha ${QT_LIBRARIES})
+target_link_libraries(srvAgatha ${QT_LIBRARIES} qjson)
 
 # tests
 # enable_testing()
