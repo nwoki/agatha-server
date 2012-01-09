@@ -26,10 +26,11 @@ public:
 private Q_SLOTS:
     void onButtonBoxClicked(QAbstractButton *button);
     void onPreviewButtonClicked();
+    void onRemoteServerToggled();                       /** called when user changes remote server to connect to */
 
 private:
-    QByteArray createPlayerJson();  /** create player json to send to server */
-    QByteArray prepareMessage();    /** prepare json message to send to server */
+    QByteArray createPlayerJson();                      /** create player json to send to server */
+    QByteArray prepareMessage();                        /** prepare json message to send to server */
     void sendPacketToServer();
     void setupSignalsAndSlots();
 

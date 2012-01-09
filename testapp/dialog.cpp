@@ -79,6 +79,16 @@ void Dialog::onPreviewButtonClicked()
     m_ui->textEdit->setText(prepareMessage());
 }
 
+/**
+ * This function disconnects previous connection when remote server is changed
+ * by the user
+ */
+void Dialog::onRemoteServerToggled()
+{
+    m_socket->disconnectFromHost();
+}
+
+
 QByteArray Dialog::prepareMessage()
 {
     QVariantMap preview;
@@ -105,22 +115,22 @@ void Dialog::sendPacketToServer()
             m_socket->connectToHost(QHostAddress::LocalHost, port);
         }
     } else if (m_ui->customAddressRadioButton->isChecked()) {
-        /// TODO do check for same address a previous here aas well
         if (m_ui->customAddressLineEdit->text().isEmpty()) {
             ///TODO error, let user know?
             return;
+        } else if (m_socket->peerAddress() != QHostAddress(m_ui->customAddressLineEdit->text())) {
+            m_socket->connectToHost(QHostAddress(m_ui->customAddressLineEdit->text()), port);
         }
-
-        m_socket->connectToHost(QHostAddress(m_ui->customAddressLineEdit->text()), port);
     }
 
     // send packet
-    qDebug() << "Writing to host: " << m_ui->textEdit->toPlainText();
-    m_socket->write(m_ui->textEdit->toPlainText().toUtf8());
+    qDebug() << "Writing to host: " << prepareMessage();
+    m_socket->write(prepareMessage());
 }
 
 void Dialog::setupSignalsAndSlots()
 {
+    connect(m_ui->localhostRadioButton, SIGNAL(toggled()), this, SLOT(onRemoteServerToggled()));
     connect(m_ui->previewButton, SIGNAL(clicked()), this, SLOT(onPreviewButtonClicked()));
     connect(m_ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(onButtonBoxClicked(QAbstractButton*)));
 }
