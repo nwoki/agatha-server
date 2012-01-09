@@ -27,6 +27,7 @@ public:
 
 private Q_SLOTS:
     void onButtonBoxClicked(QAbstractButton *button);
+    void onPreviewButtonClicked();
 
 private:
     void sendPacketToServer();

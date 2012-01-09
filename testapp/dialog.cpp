@@ -22,6 +22,10 @@ Dialog::Dialog(QWidget* parent)
     // set deefault values
     m_ui->localhostRadioButton->setChecked(true);
     m_ui->portLineEdit->setText("1337");
+    m_ui->playerGearLineEdit->setText("GLAORAA");
+    m_ui->playerIpLineEdit->setText("90.54.12.78");
+    m_ui->playerNickLineEdit->setText("[LPG]KiicK-aSS");
+    m_ui->playerWeaponModeLineEdit->setText("00000111220000020002");
 
     setupSignalsAndSlots();
     show();
@@ -43,6 +47,11 @@ void Dialog::onButtonBoxClicked(QAbstractButton* button)
     } else if (butt == QDialogButtonBox::Ok) {
         sendPacketToServer();
     }
+}
+
+void Dialog::onPreviewButtonClicked()
+{
+    /// TODO create QJSon text and show in the textArea
 }
 
 void Dialog::sendPacketToServer()
@@ -76,5 +85,6 @@ void Dialog::sendPacketToServer()
 
 void Dialog::setupSignalsAndSlots()
 {
+    connect(m_ui->previewButton, SIGNAL(clicked()), this, SLOT(onPreviewButtonClicked()));
     connect(m_ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(onButtonBoxClicked(QAbstractButton*)));
 }
