@@ -30,6 +30,10 @@ Dialog::Dialog(QWidget* parent)
     m_ui->playerNickLineEdit->setText("[LPG]KiicK-aSS");
     m_ui->playerWeaponModeLineEdit->setText("00000111220000020002");
 
+    QStringList commands;
+    commands << "add" << "delete" << "ban" << "isBanned" << "unban";
+    m_ui->commandCombo->addItems(commands);
+
     setupSignalsAndSlots();
     show();
 }
@@ -79,7 +83,7 @@ QByteArray Dialog::prepareMessage()
 {
     QVariantMap preview;
     preview.insert("game", "URT_411");
-    preview.insert("command", "addPlayer");
+    preview.insert("command", m_ui->commandCombo->currentText());
     preview.insert("playerInfo", createPlayerJson());
 
     QJson::Serializer serializer;
