@@ -10,6 +10,9 @@ set(QT_USE_QTNETWORK TRUE)
 include(${QT_USE_FILE})
 add_definitions(${QT_DEFINITIONS})
 
+# for debug
+add_definitions(-DDB_DEBUG -DDEBUG_MODE)
+
 include_directories(${QT_INCLUDE_DIR})
 
 set(srvAgatha_SRCS

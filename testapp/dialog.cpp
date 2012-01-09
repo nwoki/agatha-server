@@ -11,9 +11,9 @@
 
 #include <qjson/serializer.h>
 
+#include <QtCore/QDateTime>
 #include <QtCore/QVariantList>
 #include <QtGui/QAbstractButton>
-#include <QtNetwork/QUdpSocket>
 
 Dialog::Dialog(QWidget* parent)
     : QWidget(parent)
@@ -21,14 +21,6 @@ Dialog::Dialog(QWidget* parent)
     , m_socket(new QUdpSocket)
 {
     m_ui->setupUi(this);
-
-    // set deefault values
-    m_ui->localhostRadioButton->setChecked(true);
-    m_ui->portLineEdit->setText("1337");
-    m_ui->playerGearLineEdit->setText("GLAORAA");
-    m_ui->playerIpLineEdit->setText("90.54.12.78");
-    m_ui->playerNickLineEdit->setText("[LPG]KiicK-aSS");
-    m_ui->playerWeaponModeLineEdit->setText("00000111220000020002");
 
     QStringList commands;
     commands << "add" << "delete" << "ban" << "isBanned" << "unban";
@@ -70,6 +62,12 @@ void Dialog::onButtonBoxClicked(QAbstractButton* button)
     }
 }
 
+void Dialog::onEditingFinished()
+{
+    // disconnect from previous host
+    m_socket->disconnectFromHost();
+}
+
 void Dialog::onPreviewButtonClicked()
 {
     if (!m_ui->textEdit->toPlainText().isEmpty()) {
@@ -79,15 +77,18 @@ void Dialog::onPreviewButtonClicked()
     m_ui->textEdit->setText(prepareMessage());
 }
 
-/**
- * This function disconnects previous connection when remote server is changed
- * by the user
- */
-void Dialog::onRemoteServerToggled()
+void Dialog::onSocketError(QAbstractSocket::SocketError err)
 {
-    m_socket->disconnectFromHost();
-}
+    // create error message and show Error Tab
+    QString errorMsg;
+    errorMsg.append(QTime::currentTime().toString("<b>SocketError@HH:mm</b>"));
+    errorMsg.append(" - ");
+    errorMsg.append(m_socket->errorString());
 
+    // add error message to error tab and change focus
+    m_ui->errorTextEdit->append(errorMsg);
+    m_ui->tabWidget->setCurrentIndex(1);
+}
 
 QByteArray Dialog::prepareMessage()
 {
@@ -106,31 +107,46 @@ void Dialog::sendPacketToServer()
     int port = m_ui->portLineEdit->text().toInt(&ok);
 
     if (!ok) {
-        /// TODO error, how to let user know?
+        showErrorMsg("Invalid port");
         return;
     }
 
-    if (m_ui->localhostRadioButton->isChecked()) {
-        if (m_socket->peerAddress() != QHostAddress::LocalHost || m_socket->peerPort() != port) {
-            m_socket->connectToHost(QHostAddress::LocalHost, port);
-        }
-    } else if (m_ui->customAddressRadioButton->isChecked()) {
-        if (m_ui->customAddressLineEdit->text().isEmpty()) {
-            ///TODO error, let user know?
-            return;
-        } else if (m_socket->peerAddress() != QHostAddress(m_ui->customAddressLineEdit->text())) {
-            m_socket->connectToHost(QHostAddress(m_ui->customAddressLineEdit->text()), port);
-        }
+    if (m_ui->serverIpLineEdit->text().isEmpty()) {
+        showErrorMsg("Ip is empty");
+        return;
+    }
+
+    if (m_socket->peerAddress().toString() != m_ui->serverIpLineEdit->text()) {
+        m_socket->connectToHost(QHostAddress(m_ui->serverIpLineEdit->text()), port);
+    }
+
+    if (m_socket->peerAddress().isNull()) {
+        return;
     }
 
     // send packet
-    qDebug() << "Writing to host: " << prepareMessage();
+    qDebug() << "Writing to host: " << m_socket->peerAddress() << "/" << m_ui->serverIpLineEdit->text() << " message: " << prepareMessage();
     m_socket->write(prepareMessage());
 }
 
 void Dialog::setupSignalsAndSlots()
 {
-    connect(m_ui->localhostRadioButton, SIGNAL(toggled()), this, SLOT(onRemoteServerToggled()));
+    connect(m_socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
+    connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
     connect(m_ui->previewButton, SIGNAL(clicked()), this, SLOT(onPreviewButtonClicked()));
     connect(m_ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(onButtonBoxClicked(QAbstractButton*)));
+    connect(m_ui->serverIpLineEdit, SIGNAL(editingFinished()), this, SLOT(onEditingFinished()));
+}
+
+void Dialog::showErrorMsg(const QString& errMsg)
+{
+    // create error message and show Error Tab
+    QString errorMsg;
+    errorMsg.append(QTime::currentTime().toString("<b>Error@HH:mm</b>"));
+    errorMsg.append(" - ");
+    errorMsg.append(errMsg);
+
+    // add error message to error tab and change focus
+    m_ui->errorTextEdit->append(errorMsg);
+    m_ui->tabWidget->setCurrentIndex(1);
 }
