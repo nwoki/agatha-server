@@ -17,7 +17,7 @@ Server::Server(Config *config, QObject *parent)
     , m_udpSocket(new QUdpSocket(this))
 {
     /// TODO bind port should be given by config
-    m_udpSocket->bind(QHostAddress::Any, 1337);
+    m_udpSocket->bind(QHostAddress::Any, m_config->serverConfigStruct().port);
 
     // connect on read signals
     connect(m_udpSocket, SIGNAL(readyRead()), this, SLOT(parseIncomingData()));
