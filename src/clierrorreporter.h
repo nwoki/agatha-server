@@ -36,6 +36,9 @@ public:
      * @param errMsg error message to display
      */
     static void printError(ErrorType type, ErrorLevel lvl, const QString &errMsg);
+
+    /** print notification message to screen. Colour = green */
+    static void printNotification(const QString &msg);
 };
 
 

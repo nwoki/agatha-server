@@ -10,6 +10,7 @@
 
 #include <QtCore/QDebug>
 
+#define BOLD_GREEN "\e[1;32m"
 #define YELLOW "\e[1;33m"
 #define RED "\e[0;31m"
 #define BOLD_RED "\e[1;31m"
@@ -43,3 +44,14 @@ void CliErrorReporter::printError(CliErrorReporter::ErrorType type, CliErrorRepo
     // print
     qWarning() << cliMsg;
 }
+
+void CliErrorReporter::printNotification(const QString& msg)
+{
+    QString notification(BOLD_GREEN);
+
+    notification.append(msg);
+    notification.append(COLOR_END);
+
+    qWarning() << notification;
+}
+
