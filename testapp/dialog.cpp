@@ -9,7 +9,7 @@
 #include "dialog.h"
 #include "ui_dialog.h"
 
-#include <qjson/serializer.h>
+#include "../src/qjson/include/QJson/Serializer"
 
 #include <QtCore/QDateTime>
 #include <QtCore/QVariantList>
