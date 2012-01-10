@@ -29,6 +29,14 @@ public:
         QString password;
     };
 
+    /** struct with server settigns */
+    struct ServerConfigStruct
+    {
+        int port;
+        QString authToken;
+        QString authServer;
+    };
+
     /// TODO
 //     /** struct with agatha couchDb info */
 //     struct CouchDbStruct
@@ -39,12 +47,14 @@ public:
     Config(QObject *parent = 0);
     ~Config();
 
-    GeoIpConfigStruct geoipConfigStruct() const;    /** returns MySqlConfigStruct with mysql config values */
+    GeoIpConfigStruct geoipConfigStruct() const;    /** returns GeoIpConfigStruct with mysql config values for the geoip database*/
+    ServerConfigStruct serverConfigStruct() const;  /** returns ServerConfigStruct with general server settings */
 
 private:
     void loadConfigFile();                          /** load config file values */
 
     GeoIpConfigStruct m_geoIpConfigStruct;
+    ServerConfigStruct m_serverConfigStruct;
 };
 
 #endif  // CONFIG_H

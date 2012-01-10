@@ -10,6 +10,7 @@
 #include "config.h"
 #include "stdlib.h"
 
+#include <QtCore/QDebug>
 #include <QtCore/QFile>
 
 Config::Config(QObject* parent)
@@ -40,13 +41,33 @@ Config::GeoIpConfigStruct Config::geoipConfigStruct() const
     return m_geoIpConfigStruct;
 }
 
+Config::ServerConfigStruct Config::serverConfigStruct() const
+{
+    return m_serverConfigStruct;
+}
+
 
 void Config::loadConfigFile()
 {
+    beginGroup("server");
+    m_serverConfigStruct.authServer = value("authServer").toString();
+    m_serverConfigStruct.authToken = value("authToken").toString();
+    m_serverConfigStruct.port = value("port").toInt();
+    endGroup();
+
     beginGroup("geoipDb");
     m_geoIpConfigStruct.dbName = value("dbName").toString();
     m_geoIpConfigStruct.password = value("password").toString();
     m_geoIpConfigStruct.user = value("user").toString();
     endGroup();
+
+//     DEBUG
+    qDebug() << "SERVER : " << m_serverConfigStruct.authServer
+                            << m_serverConfigStruct.authToken
+                            << m_serverConfigStruct.port;
+
+    qDebug() << "GEOIP : "  << m_geoIpConfigStruct.dbName
+                            << m_geoIpConfigStruct.password
+                            << m_geoIpConfigStruct.user;
 }
 
