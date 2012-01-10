@@ -43,8 +43,10 @@ public:
 //     {
 //
 //     };
-
-    Config(QObject *parent = 0);
+    /** Constructor
+     * @param customConfig custom config file path
+     */
+    Config(const QString &configFile = QString("AgathaServerCfg.cfg"), QObject *parent = 0);
     ~Config();
 
     GeoIpConfigStruct geoipConfigStruct() const;    /** returns GeoIpConfigStruct with mysql config values for the geoip database*/

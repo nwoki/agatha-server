@@ -16,10 +16,15 @@ int main(int argc, char *argv[])
 {
     QCoreApplication *app = new QCoreApplication(argc, argv);
 
-    /// TODO load config values from file
-    Config *agathaConfig = new Config();
+    QString customConfig(argv[1]);
+    Config *agathaConfig;
 
-    /// TODO start server
+    if (customConfig.isEmpty()) {
+        agathaConfig = new Config();
+    } else {
+        agathaConfig = new Config(customConfig);
+    }
+
     Server srvAgatha(agathaConfig);
 
     return app->exec();

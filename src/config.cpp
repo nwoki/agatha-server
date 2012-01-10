@@ -13,16 +13,18 @@
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
 
-Config::Config(QObject* parent)
-    : QSettings("AgathaServerCfg.cfg", QSettings::IniFormat, parent)
+Config::Config(const QString &configFile, QObject* parent)
+    : QSettings(configFile, QSettings::IniFormat, parent)
 {
     // be sure config file exists
-    QFile configFile("AgathaServerCfg.cfg");
+    if (!QFile::exists(fileName())) {
+        QString errorMsg("Can't find config file : '");
+        errorMsg.append(fileName());
+        errorMsg.append("'");
 
-    if (!configFile.exists()) {
         CliErrorReporter::printError(CliErrorReporter::APPLICATION
                                     , CliErrorReporter::CRITICAL
-                                    , "Can't find config file in current directory");
+                                    , errorMsg);
         /// TODO define different error status?
         std::exit(0);
     }
