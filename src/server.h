@@ -11,19 +11,21 @@
 
 #include <QtCore/QObject>
 
+class Config;
 class QUdpSocket;
 
 class Server : public QObject
 {
     Q_OBJECT
 public:
-    Server(QObject *parent = 0);
+    Server(Config *config, QObject *parent = 0);
     ~Server();
 
 private slots:
     void parseIncomingData();
 
 private:
+    Config *m_config;
     QUdpSocket *m_udpSocket;
 };
 

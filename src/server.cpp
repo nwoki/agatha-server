@@ -6,12 +6,14 @@
  *
  */
 
+#include "config.h"
 #include "server.h"
 
 #include <QtNetwork/QUdpSocket>
 
-Server::Server(QObject *parent)
+Server::Server(Config *config, QObject *parent)
     : QObject(parent)
+    , m_config(config)
     , m_udpSocket(new QUdpSocket(this))
 {
     /// TODO bind port should be given by config

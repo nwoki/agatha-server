@@ -18,13 +18,13 @@ include_directories(${QT_INCLUDE_DIR})
 set(srvAgatha_SRCS
     src/main.cpp
     src/server.cpp
-#     src/config.cpp
+    src/config.cpp
     src/clierrorreporter.cpp
 )
 
 set(srvAgatha_HDRS
     src/server.h
-#     src/config.h
+    src/config.h
 )
 
 qt4_wrap_cpp(srvAgatha_MOC_HDRS ${srvAgatha_HDRS})

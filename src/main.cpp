@@ -6,18 +6,21 @@
  *
  */
 
+#include "clierrorreporter.h"
+#include "config.h"
 #include "server.h"
 
 #include <QtCore/QCoreApplication>
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication app(argc, argv);
+    QCoreApplication *app = new QCoreApplication(argc, argv);
 
     /// TODO load config values from file
+    Config *agathaConfig = new Config();
 
     /// TODO start server
-    Server *srvAgatha = new Server();
+    Server srvAgatha(agathaConfig);
 
-    return app.exec();
+    return app->exec();
 }
