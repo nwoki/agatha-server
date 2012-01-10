@@ -12,7 +12,9 @@ include(${QT_USE_FILE})
 add_definitions(${QT_DEFINITIONS})
 
 # for debug
-add_definitions(-DDB_DEBUG -DDEBUG_MODE)
+# -DDEBUG_MODE  (application debug mode)
+# -g            (gdb symbols)
+add_definitions(-g)
 
 include_directories(${QT_INCLUDE_DIR})
 

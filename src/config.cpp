@@ -27,6 +27,8 @@ Config::Config(const QString &configFile, QObject* parent)
                                     , errorMsg);
         /// TODO define different error status?
         std::exit(1);
+    } else {
+        CliErrorReporter::printNotification("Loading configuration file..");
     }
 
     // load data
@@ -64,6 +66,7 @@ void Config::loadConfigFile()
     endGroup();
 
 //     DEBUG
+    #ifdef DEBUG_MODE
     qDebug() << "SERVER : " << m_serverConfigStruct.authServer
                             << m_serverConfigStruct.authToken
                             << m_serverConfigStruct.port;
@@ -71,5 +74,6 @@ void Config::loadConfigFile()
     qDebug() << "GEOIP : "  << m_geoIpConfigStruct.dbName
                             << m_geoIpConfigStruct.password
                             << m_geoIpConfigStruct.user;
+    #endif
 }
 
