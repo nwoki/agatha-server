@@ -12,7 +12,13 @@
 #include <QtCore/QObject>
 
 class Config;
+class GeoIpChecker;
 class QUdpSocket;
+
+/**
+ * Agatha's UDP server. It listens for incoming messages from bots
+ * @author Francesco Nwokeka
+ */
 
 class Server : public QObject
 {
@@ -26,6 +32,7 @@ private slots:
 
 private:
     Config *m_config;
+    GeoIpChecker *m_geoIpChecker;
     QUdpSocket *m_udpSocket;
 };
 

@@ -6,6 +6,7 @@ cmake_minimum_required(VERSION 2.6)
 FIND_PACKAGE(Qt4 REQUIRED)
 
 set(QT_USE_QTNETWORK TRUE)
+set(QT_USE_QTSQL TRUE)
 
 include(${QT_USE_FILE})
 add_definitions(${QT_DEFINITIONS})
@@ -20,6 +21,7 @@ set(srvAgatha_SRCS
     src/server.cpp
     src/config.cpp
     src/clierrorreporter.cpp
+    src/geoipchecker.cpp
 )
 
 set(srvAgatha_HDRS

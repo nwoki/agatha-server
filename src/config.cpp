@@ -26,7 +26,7 @@ Config::Config(const QString &configFile, QObject* parent)
                                     , CliErrorReporter::CRITICAL
                                     , errorMsg);
         /// TODO define different error status?
-        std::exit(0);
+        std::exit(1);
     }
 
     // load data

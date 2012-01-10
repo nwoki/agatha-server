@@ -18,8 +18,6 @@
 
 class Config : public QSettings
 {
-    Q_OBJECT
-
 public:
     /** struct with geoip mysql database info */
     struct GeoIpConfigStruct
