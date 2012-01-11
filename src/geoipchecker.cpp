@@ -10,6 +10,8 @@
 #include "config.h"
 #include "geoipchecker.h"
 
+#include <QtSql/QSqlError>
+
 GeoIpChecker::GeoIpChecker(Config* config)
     : QSqlDatabase("QMYSQL")
 {
@@ -20,9 +22,12 @@ GeoIpChecker::GeoIpChecker(Config* config)
     setPassword(config->geoipConfigStruct().password);
 
     if (!open()) {
+        QString errMsg("Can't open connection to GeoIp database.\n Error is: ");
+        errMsg.append(lastError().text());
+
         CliErrorReporter::printError(CliErrorReporter::DATABASE
                                     , CliErrorReporter::CRITICAL
-                                    , "Can't open connection to GeoIp database");
+                                    , errMsg);
         std::exit(1);
     } else {
         CliErrorReporter::printNotification("Connected to mysql server..");
