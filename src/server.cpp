@@ -32,15 +32,17 @@ Server::~Server()
 void Server::parseIncomingData()
 {
     QByteArray rcvData;
+    QHostAddress incomingIp;
 
     rcvData.resize(m_udpSocket->pendingDatagramSize());
-    m_udpSocket->readDatagram(rcvData.data(), rcvData.size());
+    m_udpSocket->readDatagram(rcvData.data(), rcvData.size(), &incomingIp);
 
     /// TODO check token validity
+
     /// TODO make command executer class that runs received json
     qDebug() << "RCV: " << rcvData;
 
     /// TEST
-    qDebug() << "LOC TEST: " << m_geoIpChecker->location("79.0.190.220");
+    qDebug() << "FROM: " << incomingIp.toString() << " LOCATED @ " << m_geoIpChecker->location("79.0.190.220");
 }
 
