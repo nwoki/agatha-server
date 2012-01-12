@@ -31,7 +31,7 @@ private Q_SLOTS:
     void onSocketError(QAbstractSocket::SocketError err);
 
 private:
-    QByteArray createPlayerJson();                          /** create player json to send to server */
+    QVariantMap createPlayerMap();                          /** create player map to send to server */
     QByteArray prepareMessage();                            /** prepare json message to send to server */
     void sendPacketToServer();
     void setupSignalsAndSlots();

@@ -35,7 +35,7 @@ Dialog::~Dialog()
     delete m_ui;
 }
 
-QByteArray Dialog::createPlayerJson()
+QVariantMap Dialog::createPlayerMap()
 {
     QVariantMap player;
 
@@ -44,8 +44,7 @@ QByteArray Dialog::createPlayerJson()
     player.insert("gear", m_ui->playerGearLineEdit->text());
     player.insert("weaponMode", m_ui->playerWeaponModeLineEdit->text());
 
-    QJson::Serializer serializer;
-    return serializer.serialize(player);
+    return player;
 }
 
 
@@ -96,7 +95,7 @@ QByteArray Dialog::prepareMessage()
     preview.insert("token", m_ui->tokenLineEdit->text());
     preview.insert("game", "URT_411");
     preview.insert("command", m_ui->commandCombo->currentText());
-    preview.insert("playerInfo", createPlayerJson());
+    preview.insert("playerInfo", createPlayerMap());
 
     QJson::Serializer serializer;
     return serializer.serialize(preview);
