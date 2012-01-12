@@ -118,6 +118,10 @@ QString GeoIpChecker::queryForLocId(QSqlQuery &query, int ipNum)
 
 QString GeoIpChecker::queryForLocName(QSqlQuery &query, const QString &locId)
 {
+    if (locId.isEmpty()) {
+        return QString("Unknown");
+    }
+
     /// TODO we can select a lot more info than just the city name!!
     QString result;
     QString queryStr("select city from Location where locID=");
