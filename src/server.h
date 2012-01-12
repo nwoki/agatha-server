@@ -12,7 +12,7 @@
 #include <QtCore/QObject>
 
 class Config;
-class GeoIpChecker;
+class CommandExecuter;
 class QUdpSocket;
 
 /**
@@ -32,7 +32,7 @@ private slots:
 
 private:
     Config *m_config;
-    GeoIpChecker *m_geoIpChecker;
+    CommandExecuter *m_commandExecuter;
     QUdpSocket *m_udpSocket;
 };
 
