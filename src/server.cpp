@@ -18,7 +18,6 @@ Server::Server(Config *config, QObject *parent)
     , m_geoIpChecker(new GeoIpChecker(config))
     , m_udpSocket(new QUdpSocket(this))
 {
-    /// TODO bind port should be given by config
     m_udpSocket->bind(QHostAddress::Any, m_config->serverConfigStruct().port);
 
     // connect on read signals
@@ -40,5 +39,8 @@ void Server::parseIncomingData()
     /// TODO check token validity
     /// TODO make command executer class that runs received json
     qDebug() << "RCV: " << rcvData;
+
+    /// TEST
+    qDebug() << "LOC TEST: " << m_geoIpChecker->location("79.0.190.220");
 }
 
