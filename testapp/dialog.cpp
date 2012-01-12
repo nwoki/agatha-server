@@ -43,6 +43,7 @@ QVariantMap Dialog::createPlayerMap()
     player.insert("ip", m_ui->playerIpLineEdit->text());
     player.insert("gear", m_ui->playerGearLineEdit->text());
     player.insert("weaponMode", m_ui->playerWeaponModeLineEdit->text());
+    player.insert("guid", m_ui->guidLineEdit->text());
 
     return player;
 }
