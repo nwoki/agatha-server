@@ -93,6 +93,7 @@ void Dialog::onSocketError(QAbstractSocket::SocketError err)
 QByteArray Dialog::prepareMessage()
 {
     QVariantMap preview;
+    preview.insert("token", m_ui->tokenLineEdit->text());
     preview.insert("game", "URT_411");
     preview.insert("command", m_ui->commandCombo->currentText());
     preview.insert("playerInfo", createPlayerJson());

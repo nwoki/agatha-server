@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>402</width>
-    <height>553</height>
+    <height>579</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -83,15 +83,29 @@
         </widget>
        </item>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
-         <item>
+        <layout class="QFormLayout" name="formLayout_3">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>Token</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="tokenLineEdit">
+           <property name="text">
+            <string>c9dfc94031a2288f8a5bfa9bbcd2a3a1</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
           <widget class="QLabel" name="label">
            <property name="text">
             <string>Command</string>
            </property>
           </widget>
          </item>
-         <item>
+         <item row="1" column="1">
           <widget class="QComboBox" name="commandCombo"/>
          </item>
         </layout>
