@@ -11,16 +11,20 @@
 #include "geoipchecker.h"
 
 #include <QtCore/QDebug>
+#include <QtNetwork/QHostInfo>
 #include <QtSql/QSqlError>
 
 GeoIpChecker::GeoIpChecker(Config* config)
     : QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"))
 {
+    QHostInfo agathaServer = QHostInfo::fromName("www.agathaproject.org");
+
     // setup database connection
-    setHostName("localhost");   /// TODO use remote mysql server
-    setDatabaseName(config->geoipConfigStruct().dbName);
-    setUserName(config->geoipConfigStruct().user);
-    setPassword(config->geoipConfigStruct().password);
+    setHostName(agathaServer.addresses().at(0).toString());
+    setPort(6666);
+    setDatabaseName("geoip");
+    setUserName("srvAgatha");
+    setPassword("cicciopuzza");
 
     if (!openDatabase()) {
         std::exit(1);
@@ -93,11 +97,9 @@ bool GeoIpChecker::openDatabase()
 QString GeoIpChecker::queryForLocId(QSqlQuery &query, int ipNum)
 {
     QString result;
-    QString queryStr("SELECT locID FROM Blocks WHERE ");
+    QString queryStr("SELECT locID FROM OrderedBlocks WHERE ");
     queryStr.append(QString::number(ipNum));
-    queryStr.append(" >= startIPNum AND ");
-    queryStr.append(QString::number(ipNum));
-    queryStr.append(" <= endIPNum LIMIT 1;");
+    queryStr.append(" >= startIPNum LIMIT 1;");
 
     if (!query.exec(queryStr)) {
         CliErrorReporter::printError(CliErrorReporter::DATABASE, CliErrorReporter::ERROR, query.lastError().text());
