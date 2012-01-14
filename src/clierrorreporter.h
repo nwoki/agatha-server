@@ -21,7 +21,8 @@ class CliErrorReporter
 public:
     enum ErrorType {
         APPLICATION,    /** application related error */
-        DATABASE        /** database related error */
+        DATABASE,       /** database related error */
+        NETWORK         /** network related error */
     };
 
     enum ErrorLevel {

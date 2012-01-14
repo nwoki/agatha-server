@@ -11,7 +11,7 @@
 #include <QtCore/QDebug>
 
 #define BOLD_GREEN "\e[1;32m"
-#define YELLOW "\e[1;33m"
+#define YELLOW "\e[0;33m"
 #define RED "\e[0;31m"
 #define BOLD_RED "\e[1;31m"
 #define COLOR_END "\e[0m"
@@ -33,6 +33,8 @@ void CliErrorReporter::printError(CliErrorReporter::ErrorType type, CliErrorRepo
         cliMsg.append("[AgathaServer:Application] : ");
     } else if (type == DATABASE) {
         cliMsg.append("[AgathaServer:Database] : ");
+    } else if (type == NETWORK) {
+        cliMsg.append("[AgathaServer:Network] : ");
     }
 
     // add error message

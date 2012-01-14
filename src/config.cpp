@@ -47,8 +47,17 @@ Config::ServerConfigStruct Config::serverConfigStruct() const
 
 void Config::loadConfigFile()
 {
+    bool ok;
+
     beginGroup("server");
-    m_serverConfigStruct.port = value("port").toInt();
+    int port = value("port").toInt(&ok);
+
+    if (!ok) {
+        CliErrorReporter::printError(CliErrorReporter::APPLICATION, CliErrorReporter::WARNING, "Invalid port. Using default (1337)");
+        port = 1337;
+    }
+
+    m_serverConfigStruct.port = port;
     endGroup();
 
 //     DEBUG
