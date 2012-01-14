@@ -13,8 +13,6 @@
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 
-class Config;
-
 /**
  * Class used to fetch information from the GeoIp mysql database
  * @author Francesco Nwokeka
@@ -23,7 +21,7 @@ class Config;
 class GeoIpChecker : public QSqlDatabase
 {
 public:
-    GeoIpChecker(Config *config);
+    GeoIpChecker();
     ~GeoIpChecker();
 
     /** retrieve location from given ip

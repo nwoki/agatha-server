@@ -7,20 +7,19 @@
  */
 
 #include "clierrorreporter.h"
-#include "config.h"
 #include "geoipchecker.h"
 
 #include <QtCore/QDebug>
 #include <QtNetwork/QHostInfo>
 #include <QtSql/QSqlError>
 
-GeoIpChecker::GeoIpChecker(Config* config)
+GeoIpChecker::GeoIpChecker()
     : QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"))
 {
-    QHostInfo agathaServer = QHostInfo::fromName("www.agathaproject.org");
+    QHostInfo agathaAuthServer = QHostInfo::fromName("www.agathaproject.org");
 
     // setup database connection
-    setHostName(agathaServer.addresses().at(0).toString());
+    setHostName(agathaAuthServer.addresses().at(0).toString());
     setPort(6666);
     setDatabaseName("geoip");
     setUserName("srvAgatha");

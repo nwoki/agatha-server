@@ -19,7 +19,7 @@
 Server::Server(Config *config, QObject *parent)
     : QObject(parent)
     , m_config(config)
-    , m_commandExecuter(new CommandExecuter(new GeoIpChecker(config)))
+    , m_commandExecuter(new CommandExecuter(new GeoIpChecker))
     , m_udpSocket(new QUdpSocket(this))
 {
     m_udpSocket->bind(QHostAddress::Any, m_config->serverConfigStruct().port);

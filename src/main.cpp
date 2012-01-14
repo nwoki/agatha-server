@@ -19,6 +19,7 @@ int main(int argc, char *argv[])
     QString customConfig(argv[1]);
     Config *agathaConfig;
 
+    // check if user set a custom config file
     if (customConfig.isEmpty()) {
         agathaConfig = new Config();
     } else {

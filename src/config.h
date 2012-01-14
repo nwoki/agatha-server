@@ -19,20 +19,10 @@
 class Config : public QSettings
 {
 public:
-    /** struct with geoip mysql database info */
-    struct GeoIpConfigStruct
-    {
-        QString dbName;
-        QString user;
-        QString password;
-    };
-
     /** struct with server settigns */
     struct ServerConfigStruct
     {
         int port;
-        QString authToken;
-        QString authServer;
     };
 
     /// TODO
@@ -47,13 +37,11 @@ public:
     Config(const QString &configFile = QString("AgathaServerCfg.cfg"), QObject *parent = 0);
     ~Config();
 
-    GeoIpConfigStruct geoipConfigStruct() const;    /** returns GeoIpConfigStruct with mysql config values for the geoip database*/
     ServerConfigStruct serverConfigStruct() const;  /** returns ServerConfigStruct with general server settings */
 
 private:
     void loadConfigFile();                          /** load config file values */
 
-    GeoIpConfigStruct m_geoIpConfigStruct;
     ServerConfigStruct m_serverConfigStruct;
 };
 
