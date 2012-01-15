@@ -23,7 +23,7 @@ class GeoIpChecker;
 class CommandExecuter
 {
 public:
-    CommandExecuter(GeoIpChecker *geoIpChecker);
+    CommandExecuter();
     ~CommandExecuter();
 
     /**

@@ -22,9 +22,9 @@ set(srvAgatha_SRCS
     src/clierrorreporter.cpp
     src/config.cpp
     src/commandexecuter.cpp
-    src/geoipchecker.cpp
     src/main.cpp
     src/server.cpp
+    src/checkers/geoipchecker.cpp
 )
 
 set(srvAgatha_HDRS

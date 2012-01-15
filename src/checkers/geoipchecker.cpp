@@ -6,7 +6,7 @@
  *
  */
 
-#include "clierrorreporter.h"
+#include "../clierrorreporter.h"
 #include "geoipchecker.h"
 
 #include <QtCore/QDebug>

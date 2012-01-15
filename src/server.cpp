@@ -9,7 +9,6 @@
 #include "clierrorreporter.h"
 #include "config.h"
 #include "commandexecuter.h"
-#include "geoipchecker.h"
 #include "server.h"
 
 #include "qjson/include/QJson/Parser"
@@ -19,7 +18,7 @@
 Server::Server(Config *config, QObject *parent)
     : QObject(parent)
     , m_config(config)
-    , m_commandExecuter(new CommandExecuter(new GeoIpChecker))
+    , m_commandExecuter(new CommandExecuter)
     , m_udpSocket(new QUdpSocket(this))
 {
     m_udpSocket->bind(QHostAddress::Any, m_config->serverConfigStruct().port);

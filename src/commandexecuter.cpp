@@ -7,12 +7,12 @@
  */
 
 #include "commandexecuter.h"
-#include "geoipchecker.h"
+#include "checkers/geoipchecker.h"
 
 #include <QtCore/QDebug>
 
-CommandExecuter::CommandExecuter(GeoIpChecker *geoipchecker)
-    : m_geoIpChecker(geoipchecker)
+CommandExecuter::CommandExecuter()
+    : m_geoIpChecker(new GeoIpChecker)
 {
 }
 
