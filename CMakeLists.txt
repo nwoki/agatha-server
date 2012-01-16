@@ -25,6 +25,7 @@ set(srvAgatha_SRCS
     src/main.cpp
     src/server.cpp
     src/checkers/geoipchecker.cpp
+    src/checkers/serverAuthChecker.cpp
 )
 
 set(srvAgatha_HDRS
