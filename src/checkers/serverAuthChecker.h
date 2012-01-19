@@ -23,7 +23,7 @@ public:
     ServerAuthChecker();
     ~ServerAuthChecker();
 
-    bool isTokenValid(const QString &serverToken);
+    bool isTokenValid(const QString &serverIp, quint16 serverPort, const QString &serverToken);
 
 private:
     /** opens a connection to the database. Returns connection status */

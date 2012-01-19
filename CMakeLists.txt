@@ -14,7 +14,7 @@ add_definitions(${QT_DEFINITIONS})
 # for debug
 # -DDEBUG_MODE  (application debug mode)
 # -g            (gdb symbols)
-add_definitions(-g)
+add_definitions(-g -DDEBUG_MODE)
 
 include_directories(${QT_INCLUDE_DIR})
 

@@ -13,6 +13,7 @@
 
 class Config;
 class CommandExecuter;
+class ServerAuthChecker;
 class QUdpSocket;
 
 /**
@@ -33,6 +34,7 @@ private slots:
 private:
     Config *m_config;
     CommandExecuter *m_commandExecuter;
+    ServerAuthChecker *m_serverAuthChecker;
     QUdpSocket *m_udpSocket;
 };
 

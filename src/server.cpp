@@ -6,6 +6,7 @@
  *
  */
 
+#include "checkers/serverAuthChecker.h"
 #include "clierrorreporter.h"
 #include "config.h"
 #include "commandexecuter.h"
@@ -19,6 +20,7 @@ Server::Server(Config *config, QObject *parent)
     : QObject(parent)
     , m_config(config)
     , m_commandExecuter(new CommandExecuter)
+    , m_serverAuthChecker(new ServerAuthChecker)
     , m_udpSocket(new QUdpSocket(this))
 {
     m_udpSocket->bind(QHostAddress::Any, m_config->serverConfigStruct().port);
@@ -31,6 +33,7 @@ Server::~Server()
 {
     delete m_commandExecuter;
     delete m_config;
+    delete m_serverAuthChecker;
     delete m_udpSocket;
 }
 
@@ -38,9 +41,10 @@ void Server::parseIncomingData()
 {
     QByteArray rcvData;
     QHostAddress incomingIp;
+    quint16 incomingPort;
 
     rcvData.resize(m_udpSocket->pendingDatagramSize());
-    m_udpSocket->readDatagram(rcvData.data(), rcvData.size(), &incomingIp);
+    m_udpSocket->readDatagram(rcvData.data(), rcvData.size(), &incomingIp, &incomingPort);
 
     qDebug() << "RCV: " << rcvData;
 
@@ -52,6 +56,8 @@ void Server::parseIncomingData()
     if (!ok) {
         QString errStr("Recieved invalid json from ");
         errStr.append(incomingIp.toString());
+        errStr.append(":");
+        errStr.append(incomingPort);
         CliErrorReporter::printError(CliErrorReporter::APPLICATION, CliErrorReporter::WARNING, errStr);
         return;
     }
@@ -60,12 +66,13 @@ void Server::parseIncomingData()
     qDebug() << result["token"].toString() << result["game"].toString() << result["command"].toString();
 #endif
 
-    /// TODO check token validity
-
-
-    /// TODO if check passes, exec json
-
-    // determine cmd and game to execute query for
-    m_commandExecuter->execute(result["command"].toString(), result["game"].toString(), result["playerInfo"].toMap());
+    // check token validity
+    if (m_serverAuthChecker->isTokenValid(incomingIp.toString(), incomingPort, result["token"].toString())) {
+        // determine cmd and game to execute query for
+        m_commandExecuter->execute(result["command"].toString(), result["game"].toString(), result["playerInfo"].toMap());
+    } else {
+        // else drop incoming json
+        qDebug("INVALID TOKEN");
+    }
 }
 

@@ -14,7 +14,7 @@
 #include <QtSql/QSqlQuery>
 
 ServerAuthChecker::ServerAuthChecker()
-    : QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"))
+    : QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL", "agathaDb"))
 {
     QHostInfo agathaAuthServer = QHostInfo::fromName("www.agathaproject.org");
 
@@ -23,9 +23,9 @@ ServerAuthChecker::ServerAuthChecker()
     setPort(6666);
 
     /// TODO when aquilinux adds the new database and user
-//     setDatabaseName("geoip");
-//     setUserName("srvAgatha");
-//     setPassword("cicciopuzza");
+    setDatabaseName("agatha");
+    setUserName("srvAgatha");
+    setPassword("cicciopuzza");
 
     if (!openDatabase()) {
         std::exit(1);
@@ -36,26 +36,38 @@ ServerAuthChecker::~ServerAuthChecker()
 {
 }
 
-bool ServerAuthChecker::isTokenValid(const QString& serverToken)
+bool ServerAuthChecker::isTokenValid(const QString &serverIp, quint16 serverPort, const QString& serverToken)
 {
-    /// TODO do the sql query and return if there is a record on db or not
-    QString queryStr("select id from servers where token=");
-    queryStr.append(serverToken);
-
-    QSqlQuery query;
     bool result = false;
 
-    if (!query.exec(queryStr)) {
-        CliErrorReporter::printError(CliErrorReporter::DATABASE, CliErrorReporter::ERROR, query.lastError().text());
-    } else {
-        if (query.next()) {
-            result = true;
+    if (!isOpen()) {
+        if (!openDatabase()) {
+            return result;
         }
     }
 
+    /// TODO do the sql query and return if there is a record on db or not
+    QString queryStr("select clan from agatha_servers where ip='");
+    queryStr.append(serverIp);
+    queryStr.append("' and port='");
+    queryStr.append(QString::number(serverPort));
+    queryStr.append("' and token='");
+    queryStr.append(serverToken);
+    queryStr.append("';");
+
+    QSqlQuery query(database("agathaDb"));
+
+    if (!query.exec(queryStr)) {
+        CliErrorReporter::printError(CliErrorReporter::DATABASE, CliErrorReporter::ERROR, query.lastError().text());
+    } else if (query.size() == 0 || query.size() == -1) {
+        return false;
+    } else if (query.next()) {
+        result = true;
+    }
+
 #ifdef DEBUG_MODE
-    qDebug() << "QUERY STRING IS: " << query.value(0).toString();
-    qDebug() << "LOC ID IS: " << result;
+    qDebug() << "[ServerAuthChecker::isTokenValid] QUERY STRING IS: " << queryStr;
+    qDebug() << "[ServerAuthChecker::isTokenValid] CLAN ID IS: " << result;
 #endif
 
     return result;
@@ -67,7 +79,7 @@ bool ServerAuthChecker::openDatabase()
 
     /// TODO need to log database errors to file!
     if (!open()) {
-        QString errMsg("Can't open connection to GeoIp database.\n Error is: ");
+        QString errMsg("Can't open connection to webAgatha database.\n Error is: ");
         errMsg.append(lastError().text());
 
         CliErrorReporter::printError(CliErrorReporter::DATABASE
@@ -75,7 +87,7 @@ bool ServerAuthChecker::openDatabase()
         , errMsg);
         isDbOpen = false;
     } else {
-        CliErrorReporter::printNotification("Connected to mysql server..");
+        CliErrorReporter::printNotification("Connected to mysql server: agatha..");
         isDbOpen = true;
     }
 

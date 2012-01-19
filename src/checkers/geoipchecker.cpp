@@ -14,7 +14,7 @@
 #include <QtSql/QSqlError>
 
 GeoIpChecker::GeoIpChecker()
-    : QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL"))
+    : QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL", "geoipDb"))
 {
     QHostInfo agathaAuthServer = QHostInfo::fromName("www.agathaproject.org");
 
@@ -48,7 +48,7 @@ QString GeoIpChecker::location(const QString& ip)
     // generate values for mysql query
     QStringList ipValues = ip.split(".", QString::SkipEmptyParts);
     int ipNum = genIpNum(ipValues);
-    QSqlQuery query;
+    QSqlQuery query(database("geoipDb"));
 
     // get locID from database
     return queryForLocName(query, queryForLocId(query, ipNum));
@@ -86,7 +86,7 @@ bool GeoIpChecker::openDatabase()
         , errMsg);
         isDbOpen = false;
     } else {
-        CliErrorReporter::printNotification("Connected to mysql server..");
+        CliErrorReporter::printNotification("Connected to mysql server: geoip..");
         isDbOpen = true;
     }
 
@@ -110,8 +110,8 @@ QString GeoIpChecker::queryForLocId(QSqlQuery &query, int ipNum)
     }
 
 #ifdef DEBUG_MODE
-    qDebug() << "QUERY STRING IS: " << queryStr;
-    qDebug() << "LOC ID IS: " << result;
+    qDebug() << "[GeoIpChecker::queryForLocId] QUERY STRING IS: " << queryStr;
+    qDebug() << "[GeoIpChecker::queryForLocId] LOC ID IS: " << result;
 #endif
 
     return result;
@@ -138,8 +138,8 @@ QString GeoIpChecker::queryForLocName(QSqlQuery &query, const QString &locId)
     }
 
 #ifdef DEBUG_MODE
-    qDebug() << "QUERY STRING IS: " << queryStr;
-    qDebug() << "LOC NAME IS: " << result;
+    qDebug() << "[GeoIpChecker::queryForLocId] QUERY STRING IS: " << queryStr;
+    qDebug() << "[GeoIpChecker::queryForLocId] LOC NAME IS: " << result;
 #endif
 
     return result;
