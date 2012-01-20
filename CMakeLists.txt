@@ -31,6 +31,7 @@ set(srvAgatha_SRCS
 set(srvAgatha_HDRS
     src/server.h
     src/config.h
+    src/commandexecuter.h
 )
 
 qt4_wrap_cpp(srvAgatha_MOC_HDRS ${srvAgatha_HDRS})

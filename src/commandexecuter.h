@@ -9,8 +9,12 @@
 #ifndef COMMANDEXECUTER_H
 #define COMMANDEXECUTER_H
 
-#include <QString>
-#include <QVariantMap>
+#include <QtCore/QObject>
+#include <QtCore/QString>
+#include <QtCore/QVariantMap>
+
+#include <QtNetwork/QNetworkReply>
+#include <QtNetwork/QNetworkRequest>
 
 /**
  * Class used for executing incoming commands from various bots around the world!
@@ -19,11 +23,20 @@
  */
 
 class GeoIpChecker;
+class QNetworkAccessManager;
 
-class CommandExecuter
+class CommandExecuter : public QObject
 {
+    Q_OBJECT
+
 public:
-    CommandExecuter();
+    enum RequestType {
+        GET,
+        POST,
+        PUT
+    };
+
+    CommandExecuter(QObject *parent = 0);
     ~CommandExecuter();
 
     /**
@@ -34,8 +47,18 @@ public:
      */
     void execute(const QString &command, const QString &game, const QVariantMap &player);
 
+    void test();
+
+private slots:
+    void onReadyRead();
+    void onReplyError(QNetworkReply::NetworkError error);
+
 private:
+    void sendRequest(const QNetworkRequest &request, RequestType type);
+
     GeoIpChecker *m_geoIpChecker;
+    QNetworkAccessManager *m_networkManager;
+    QNetworkReply *m_reply;
 };
 
 
