@@ -10,11 +10,11 @@
 #define SERVER_H
 
 #include "config.h"
+#include "commandexecuter.h"
 
 #include <QtCore/QObject>
 
 class Config;
-class CommandExecuter;
 class ServerAuthChecker;
 class QUdpSocket;
 
@@ -34,6 +34,8 @@ private slots:
     void parseIncomingData();
 
 private:
+    CommandExecuter::Command determineCommand(const QString &command) const;
+
     Config::ServerConfigStruct m_serverConfigStruct;
     CommandExecuter *m_commandExecuter;
     ServerAuthChecker *m_serverAuthChecker;

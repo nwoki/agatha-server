@@ -8,7 +8,6 @@
 
 #include "checkers/serverAuthChecker.h"
 #include "clierrorreporter.h"
-#include "commandexecuter.h"
 #include "server.h"
 
 #include "qjson/include/QJson/Parser"
@@ -28,12 +27,36 @@ Server::Server(Config *config, QObject *parent)
     connect(m_udpSocket, SIGNAL(readyRead()), this, SLOT(parseIncomingData()));
 }
 
+
 Server::~Server()
 {
     delete m_commandExecuter;
     delete m_serverAuthChecker;
     delete m_udpSocket;
 }
+
+
+CommandExecuter::Command Server::determineCommand(const QString &command) const
+{
+    CommandExecuter::Command cmd;
+
+    if (command.toLower() == "add") {
+        cmd = CommandExecuter::ADD;
+    } else if (command.toLower() == "ban") {
+        cmd = CommandExecuter::BAN;
+    } else if (command.toLower() == "isbanned") {
+        cmd = CommandExecuter::IS_BANNED;
+    } else if (command.toLower() == "whois") {
+        cmd = CommandExecuter::WHO_IS;
+    }
+
+#ifdef DEBUG_MODE
+    qDebug() << "[Server::determineCommand] command is: " << command.toLower();
+#endif
+
+    return cmd;
+}
+
 
 void Server::parseIncomingData()
 {
@@ -60,14 +83,17 @@ void Server::parseIncomingData()
         return;
     }
 
+    QString srvToken = result["token"].toString();
+    QString game = result["game"].toString();
+    QString command = result["command"].toString();
+
 #ifdef DEBUG_MODE
-    qDebug() << result["token"].toString() << result["game"].toString() << result["command"].toString();
+    qDebug() << srvToken << game << command << incomingIp.toString() << incomingPort;
 #endif
 
     // check token validity
-    if (m_serverAuthChecker->isTokenValid(incomingIp.toString(), incomingPort, result["token"].toString())) {
-        // determine cmd and game to execute query for
-        m_commandExecuter->execute(result["command"].toString(), result["game"].toString(), result["playerInfo"].toMap());
+    if (m_serverAuthChecker->isTokenValid(incomingIp.toString(), incomingPort, srvToken)) {
+        m_commandExecuter->execute(determineCommand(command), srvToken, game, result["playerInfo"].toMap());
     } else {
         // else drop incoming json
         qDebug("INVALID TOKEN");

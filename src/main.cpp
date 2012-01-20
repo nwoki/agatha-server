@@ -6,7 +6,6 @@
  *
  */
 
-#include "clierrorreporter.h"
 #include "config.h"
 #include "server.h"
 

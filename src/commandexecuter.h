@@ -32,10 +32,11 @@ class CommandExecuter : public QObject
     Q_OBJECT
 
 public:
-    enum RequestType {
-        GET,
-        POST,
-        PUT
+    enum Command {
+        ADD,
+        BAN,
+        IS_BANNED,
+        WHO_IS
     };
 
     CommandExecuter(Config::CouchDbStruct couchDbStruct, QObject *parent = 0);
@@ -44,19 +45,18 @@ public:
     /**
      * execute given command for the game specified using info in the player VariantMap
      * @param command query type to execute on database
+     * @param token server token
      * @param game gametype to execute query for
      * @param player QVariantMap with info on the player to use in query
      */
-    void execute(const QString &command, const QString &game, const QVariantMap &player);
-
-    void test();
+    void execute(Command cmd, const QString &token, const QString &game, const QVariantMap &player);
 
 private slots:
-    void onReadyRead();
     void onReplyError(QNetworkReply::NetworkError error);
+    void onWhoIsReady();    /** slot called after a WHOIS request */
 
 private:
-    void sendRequest(const QNetworkRequest &request, RequestType type);
+//     void checkForExistingRecord();
 
     Config::CouchDbStruct m_couchDbStruct;
     GeoIpChecker *m_geoIpChecker;

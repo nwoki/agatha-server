@@ -30,11 +30,11 @@ CommandExecuter::~CommandExecuter()
 }
 
 
-void CommandExecuter::execute(const QString &command, const QString &game, const QVariantMap &player)
+void CommandExecuter::execute(Command cmd, const QString &token, const QString &game, const QVariantMap &player)
 {
-    ///TODO add geoloc position and timestamp before sending to couchDB
+    ///TODO add geoloc position and timestamp before sending to couchDB. Cache data before writing to couch.
 
-    qDebug() << "CommandExecuter::execute " << command << " for " << game;
+    qDebug() << "CommandExecuter::execute " << cmd << " for " << game;
     qDebug() << "Count " << player.count();
 
     qDebug() << player["nick"].toString();
@@ -45,14 +45,36 @@ void CommandExecuter::execute(const QString &command, const QString &game, const
 
     /// TEST
     qDebug() << "PLAYER IP: " << player["ip"].toString() << " LOCATED @ " << m_geoIpChecker->location(player["ip"].toString());
-}
 
 
-void CommandExecuter::test()
-{
-    /// TODO modify with config values
-    QNetworkRequest request(QUrl("http://127.0.0.1:5984"));
-    sendRequest(request, GET);
+    QNetworkRequest request;
+    QString requestUrl(m_couchDbStruct.queryUrl());
+
+    if (cmd == ADD) {
+        /// TODO
+        /*
+        * 1 - check if player doesn't already exist in db. If he doesn't go to point 4
+        * 2 - get id and _rev
+        * 3 - add data in the right places
+        * 4 - push to database
+        */
+    } else if (cmd == BAN) {
+
+    } else if (cmd == IS_BANNED) {
+
+    } else if (cmd == WHO_IS) {
+        requestUrl.append(player["guid"].toString());
+        requestUrl.append("-");
+        requestUrl.append(token);
+        request.setUrl(requestUrl);
+
+        qDebug() << "REQUEST URL IS: " << requestUrl;
+
+        m_reply = m_networkManager->get(request);
+
+        connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onReplyError(QNetworkReply::NetworkError)));
+        connect(m_reply, SIGNAL(readyRead()), this, SLOT(onWhoIsReady()));
+    }
 }
 
 
@@ -63,28 +85,12 @@ void CommandExecuter::onReplyError(QNetworkReply::NetworkError error)
 }
 
 
-void CommandExecuter::onReadyRead()
+void CommandExecuter::onWhoIsReady()
 {
-    qDebug() << "[CommandExecuter::onReplyFinished] " << m_reply->readAll();
+    qDebug() << "[CommandExecuter::onWhoIsReady] : " << m_reply->readAll();
+
+    /// TODO send back to bot
     m_reply->deleteLater();
 }
-
-
-void CommandExecuter::sendRequest(const QNetworkRequest &request, RequestType type)
-{
-    if (type == GET) {
-        m_reply = m_networkManager->get(request);
-    }
-    /// TODO POST
-    /* else {
-        reply = m_networkManager->post(request, "ASDASDASD");
-    }*/
-
-    // connect reply to slots
-    connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onReplyError(QNetworkReply::NetworkError)));
-    connect(m_reply, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
-}
-
-
 
 

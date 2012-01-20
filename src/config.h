@@ -39,7 +39,7 @@ public:
 
             url.append(ip);
             url.append(":");
-            url.append(port);
+            url.append(QString::number(port));
             url.append("/");
             url.append(dbName);
             url.append("/");
