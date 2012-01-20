@@ -23,7 +23,7 @@ Dialog::Dialog(QWidget* parent)
     m_ui->setupUi(this);
 
     QStringList commands;
-    commands << "add" << "delete" << "ban" << "isBanned" << "unban";
+    commands << "add" << "ban" << "isBanned" << "whoIs";
     m_ui->commandCombo->addItems(commands);
 
     setupSignalsAndSlots();
