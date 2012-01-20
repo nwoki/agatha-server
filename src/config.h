@@ -25,23 +25,26 @@ public:
         int port;
     };
 
-    /// TODO
-//     /** struct with agatha couchDb info */
-//     struct CouchDbStruct
-//     {
-//
-//     };
+    /** struct with agatha couchDb info */
+    struct CouchDbStruct
+    {
+        QString ip;
+        int port;
+    };
+
     /** Constructor
      * @param customConfig custom config file path
      */
     Config(const QString &configFile = QString("AgathaServerCfg.cfg"), QObject *parent = 0);
     ~Config();
 
+    CouchDbStruct couchDbStruct() const;            /** returns CouchDbStruct with couchDB settings */
     ServerConfigStruct serverConfigStruct() const;  /** returns ServerConfigStruct with general server settings */
 
 private:
     void loadConfigFile();                          /** load config file values */
 
+    CouchDbStruct m_couchDbStruct;
     ServerConfigStruct m_serverConfigStruct;
 };
 

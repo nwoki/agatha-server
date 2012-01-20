@@ -9,6 +9,8 @@
 #ifndef SERVER_H
 #define SERVER_H
 
+#include "config.h"
+
 #include <QtCore/QObject>
 
 class Config;
@@ -32,7 +34,7 @@ private slots:
     void parseIncomingData();
 
 private:
-    Config *m_config;
+    Config::ServerConfigStruct m_serverConfigStruct;
     CommandExecuter *m_commandExecuter;
     ServerAuthChecker *m_serverAuthChecker;
     QUdpSocket *m_udpSocket;

@@ -14,18 +14,21 @@
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
 
-CommandExecuter::CommandExecuter(QObject *parent)
+CommandExecuter::CommandExecuter(Config::CouchDbStruct couchDbStruct, QObject *parent)
     : QObject(parent)
+    , m_couchDbStruct(couchDbStruct)
     , m_geoIpChecker(new GeoIpChecker)
     , m_networkManager(new QNetworkAccessManager(this))
 {
 }
+
 
 CommandExecuter::~CommandExecuter()
 {
     delete m_geoIpChecker;
     delete m_networkManager;
 }
+
 
 void CommandExecuter::execute(const QString &command, const QString &game, const QVariantMap &player)
 {
@@ -44,6 +47,7 @@ void CommandExecuter::execute(const QString &command, const QString &game, const
     qDebug() << "PLAYER IP: " << player["ip"].toString() << " LOCATED @ " << m_geoIpChecker->location(player["ip"].toString());
 }
 
+
 void CommandExecuter::test()
 {
     /// TODO modify with config values
@@ -51,17 +55,20 @@ void CommandExecuter::test()
     sendRequest(request, GET);
 }
 
+
 void CommandExecuter::onReplyError(QNetworkReply::NetworkError error)
 {
     CliErrorReporter::printError(CliErrorReporter::NETWORK, CliErrorReporter::CRITICAL, m_reply->errorString());
     m_reply->deleteLater();
 }
 
+
 void CommandExecuter::onReadyRead()
 {
     qDebug() << "[CommandExecuter::onReplyFinished] " << m_reply->readAll();
     m_reply->deleteLater();
 }
+
 
 void CommandExecuter::sendRequest(const QNetworkRequest &request, RequestType type)
 {

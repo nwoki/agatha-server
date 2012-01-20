@@ -9,6 +9,8 @@
 #ifndef COMMANDEXECUTER_H
 #define COMMANDEXECUTER_H
 
+#include "config.h"
+
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QVariantMap>
@@ -36,7 +38,7 @@ public:
         PUT
     };
 
-    CommandExecuter(QObject *parent = 0);
+    CommandExecuter(Config::CouchDbStruct couchDbStruct, QObject *parent = 0);
     ~CommandExecuter();
 
     /**
@@ -56,6 +58,7 @@ private slots:
 private:
     void sendRequest(const QNetworkRequest &request, RequestType type);
 
+    Config::CouchDbStruct m_couchDbStruct;
     GeoIpChecker *m_geoIpChecker;
     QNetworkAccessManager *m_networkManager;
     QNetworkReply *m_reply;

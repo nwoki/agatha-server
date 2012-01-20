@@ -8,7 +8,6 @@
 
 #include "checkers/serverAuthChecker.h"
 #include "clierrorreporter.h"
-#include "config.h"
 #include "commandexecuter.h"
 #include "server.h"
 
@@ -18,12 +17,12 @@
 
 Server::Server(Config *config, QObject *parent)
     : QObject(parent)
-    , m_config(config)
-    , m_commandExecuter(new CommandExecuter)
+    , m_serverConfigStruct(config->serverConfigStruct())
+    , m_commandExecuter(new CommandExecuter(config->couchDbStruct()))
     , m_serverAuthChecker(new ServerAuthChecker)
     , m_udpSocket(new QUdpSocket(this))
 {
-    m_udpSocket->bind(QHostAddress::Any, m_config->serverConfigStruct().port);
+    m_udpSocket->bind(QHostAddress::Any, m_serverConfigStruct.port);
 
     // connect on read signals
     connect(m_udpSocket, SIGNAL(readyRead()), this, SLOT(parseIncomingData()));
@@ -32,7 +31,6 @@ Server::Server(Config *config, QObject *parent)
 Server::~Server()
 {
     delete m_commandExecuter;
-    delete m_config;
     delete m_serverAuthChecker;
     delete m_udpSocket;
 }

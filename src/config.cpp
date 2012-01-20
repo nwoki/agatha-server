@@ -35,9 +35,17 @@ Config::Config(const QString &configFile, QObject* parent)
     loadConfigFile();
 }
 
+
 Config::~Config()
 {
 }
+
+
+Config::CouchDbStruct Config::couchDbStruct() const
+{
+    return m_couchDbStruct;
+}
+
 
 Config::ServerConfigStruct Config::serverConfigStruct() const
 {
@@ -49,20 +57,37 @@ void Config::loadConfigFile()
 {
     bool ok;
 
+    // SERVER
     beginGroup("server");
-    int port = value("port").toInt(&ok);
+    int srvPort = value("port").toInt(&ok);
 
     if (!ok) {
-        CliErrorReporter::printError(CliErrorReporter::APPLICATION, CliErrorReporter::WARNING, "Invalid port. Using default (1337)");
-        port = 1337;
+        CliErrorReporter::printError(CliErrorReporter::APPLICATION, CliErrorReporter::WARNING, "Invalid server port. Using default (1337)");
+        srvPort = 1337;
     }
 
-    m_serverConfigStruct.port = port;
+    m_serverConfigStruct.port = srvPort;
+    endGroup();
+
+    // COUCHDB
+    beginGroup("couchDb");
+
+    m_couchDbStruct.ip = value("ip").toString();
+    int dbPort = value("port").toInt(&ok);
+
+    if (!ok) {
+        CliErrorReporter::printError(CliErrorReporter::APPLICATION, CliErrorReporter::WARNING, "Invalid couchDB port. Using default (5984)");
+        dbPort = 5984;    // set to default couchdb port
+    }
+
+    m_couchDbStruct.port = dbPort;
     endGroup();
 
 //     DEBUG
 #ifdef DEBUG_MODE
     qDebug() << "SERVER : " << m_serverConfigStruct.port;
+    qDebug() << "COUCHDB : " << m_couchDbStruct.ip;
+    qDebug() << "COUCHDB : " << m_couchDbStruct.port;
 #endif
 }
 
