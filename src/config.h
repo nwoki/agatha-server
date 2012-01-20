@@ -30,6 +30,22 @@ public:
     {
         QString ip;
         int port;
+        QString dbName;
+
+        /** returns url asd ip:port/dbName/ for queries to the database */
+        QString queryUrl()
+        {
+            QString url("http://");
+
+            url.append(ip);
+            url.append(":");
+            url.append(port);
+            url.append("/");
+            url.append(dbName);
+            url.append("/");
+
+            return url;
+        }
     };
 
     /** Constructor

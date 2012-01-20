@@ -81,6 +81,8 @@ void Config::loadConfigFile()
     }
 
     m_couchDbStruct.port = dbPort;
+    m_couchDbStruct.dbName = value("dbName").toString();
+
     endGroup();
 
 //     DEBUG
@@ -88,6 +90,7 @@ void Config::loadConfigFile()
     qDebug() << "SERVER : " << m_serverConfigStruct.port;
     qDebug() << "COUCHDB : " << m_couchDbStruct.ip;
     qDebug() << "COUCHDB : " << m_couchDbStruct.port;
+    qDebug() << "COUCHDB : " << m_couchDbStruct.dbName;
 #endif
 }
 
