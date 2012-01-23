@@ -9,6 +9,7 @@
 #include "checkers/geoipchecker.h"
 #include "clierrorreporter.h"
 #include "commandexecuter.h"
+#include "responsedispatcher.h"
 
 #include <QtCore/QDebug>
 #include <QtNetwork/QNetworkAccessManager>
@@ -19,7 +20,21 @@ CommandExecuter::CommandExecuter(Config::CouchDbStruct couchDbStruct, QObject *p
     , m_couchDbStruct(couchDbStruct)
     , m_geoIpChecker(new GeoIpChecker)
     , m_networkManager(new QNetworkAccessManager(this))
+    , m_responseDispatcher(new ResponseDispatcher(this))
 {
+    /// TODO make srv->couchDB methods synchronous
+    /*
+     * Q AsyncClass *class;                                                                                                                            *
+     * QEventLoop e;
+     *
+     * connect(class, SIGNAL(finished()), &e, SLOT(quit()));
+     *
+     * class->performAsyncOp();
+     * e.exec();
+     *
+     * // exec returns when performAsyncOp has ended. Class is stuck in a loop but
+     * the application isn't blocked, as e is a children of the main event loop
+     */
 }
 
 
@@ -30,7 +45,12 @@ CommandExecuter::~CommandExecuter()
 }
 
 
-void CommandExecuter::execute(Command cmd, const QString &token, const QString &game, const QVariantMap &player)
+void CommandExecuter::execute(Command cmd
+                            , const QString &token
+                            , const QString &game
+                            , const QVariantMap &player
+                            , const QString &responseIp
+                            , quint16 responsePort)
 {
     ///TODO add geoloc position and timestamp before sending to couchDB. Cache data before writing to couch.
 
@@ -43,9 +63,9 @@ void CommandExecuter::execute(Command cmd, const QString &token, const QString &
     qDebug() << player["weaponMode"].toString();
     qDebug() << player["guid"].toString();
 
-    /// TEST
+#ifdef DEBUG_MODE
     qDebug() << "PLAYER IP: " << player["ip"].toString() << " LOCATED @ " << m_geoIpChecker->location(player["ip"].toString());
-
+#endif
 
     QNetworkRequest request;
     QString requestUrl(m_couchDbStruct.queryUrl());
@@ -63,12 +83,16 @@ void CommandExecuter::execute(Command cmd, const QString &token, const QString &
     } else if (cmd == IS_BANNED) {
 
     } else if (cmd == WHO_IS) {
+        m_responseDispatcher->setResponseRecipient(responseIp, responsePort);
+
         requestUrl.append(player["guid"].toString());
         requestUrl.append("-");
         requestUrl.append(token);
         request.setUrl(requestUrl);
 
+#ifdef DEBUG_MODE
         qDebug() << "REQUEST URL IS: " << requestUrl;
+#endif
 
         m_reply = m_networkManager->get(request);
 
@@ -87,10 +111,29 @@ void CommandExecuter::onReplyError(QNetworkReply::NetworkError error)
 
 void CommandExecuter::onWhoIsReady()
 {
+#ifdef DEBUG_MODE
     qDebug() << "[CommandExecuter::onWhoIsReady] : " << m_reply->readAll();
+#endif
 
     /// TODO send back to bot
+    /// TODO filter response message to extract only the desired player object. Don't
+    /// need all the extra stuff couchDB sends back
+
     m_reply->deleteLater();
 }
+
+
+void CommandExecuter::clearResponseData()
+{
+//     m_responseIp.clear();
+}
+
+
+void CommandExecuter::setResponseData(const QString &responseIp, quint16 responsePort)
+{
+    m_responseDispatcher->setResponseRecipient(responseIp, responsePort);
+}
+
+
 
 

@@ -93,7 +93,12 @@ void Server::parseIncomingData()
 
     // check token validity
     if (m_serverAuthChecker->isTokenValid(incomingIp.toString(), incomingPort, srvToken)) {
-        m_commandExecuter->execute(determineCommand(command), srvToken, game, result["playerInfo"].toMap());
+        m_commandExecuter->execute(determineCommand(command)
+                                , srvToken
+                                , game
+                                , result["playerInfo"].toMap()
+                                , incomingIp.toString()
+                                , incomingPort);
     } else {
         // else drop incoming json
         qDebug("INVALID TOKEN");

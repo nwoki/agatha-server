@@ -18,6 +18,8 @@ GeoIpChecker::GeoIpChecker()
 {
     QHostInfo agathaAuthServer = QHostInfo::fromName("www.agathaproject.org");
 
+    /// TODO crash if there is no internet connection. Check for size of addresses.count() > 0
+
     // setup database connection
     setHostName(agathaAuthServer.addresses().at(0).toString());
     setPort(6666);

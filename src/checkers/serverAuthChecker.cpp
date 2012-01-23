@@ -19,13 +19,13 @@ ServerAuthChecker::ServerAuthChecker()
     QHostInfo agathaAuthServer = QHostInfo::fromName("www.agathaproject.org");
 
     // setup database connection
-    setHostName(agathaAuthServer.addresses().at(0).toString());
-    setPort(6666);
+    setHostName("localhost"/*agathaAuthServer.addresses().at(0).toString()*/);
+//     setPort(6666);
 
     /// TODO when aquilinux adds the new database and user
     setDatabaseName("agatha");
-    setUserName("srvAgatha");
-    setPassword("cicciopuzza");
+    setUserName("root"/*"srvAgatha"*/);
+    setPassword("root"/*"cicciopuzza"*/);
 
     if (!openDatabase()) {
         std::exit(1);

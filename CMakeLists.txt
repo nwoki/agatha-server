@@ -23,6 +23,7 @@ set(srvAgatha_SRCS
     src/config.cpp
     src/commandexecuter.cpp
     src/main.cpp
+    src/responsedispatcher.cpp
     src/server.cpp
     src/checkers/geoipchecker.cpp
     src/checkers/serverAuthChecker.cpp
@@ -32,6 +33,7 @@ set(srvAgatha_HDRS
     src/server.h
     src/config.h
     src/commandexecuter.h
+    src/responsedispatcher.h
 )
 
 qt4_wrap_cpp(srvAgatha_MOC_HDRS ${srvAgatha_HDRS})

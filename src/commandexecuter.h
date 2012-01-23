@@ -26,6 +26,7 @@
 
 class GeoIpChecker;
 class QNetworkAccessManager;
+class ResponseDispatcher;
 
 class CommandExecuter : public QObject
 {
@@ -48,20 +49,38 @@ public:
      * @param token server token
      * @param game gametype to execute query for
      * @param player QVariantMap with info on the player to use in query
+     * @param responseIp ip to return response to if the command requests an answer
+     * @param responePort port to return response to if the command requests an answer
      */
-    void execute(Command cmd, const QString &token, const QString &game, const QVariantMap &player);
+    void execute(Command cmd
+                , const QString &token
+                , const QString &game
+                , const QVariantMap &player
+                , const QString &responseIp
+                , quint16 responsePort);
 
 private slots:
+    /** Generic error slot for QNetworkReply */
     void onReplyError(QNetworkReply::NetworkError error);
-    void onWhoIsReady();    /** slot called after a WHOIS request */
+
+    /** slot called after a WHOIS request */
+    void onWhoIsReady();
 
 private:
 //     void checkForExistingRecord();
+    void clearResponseData();
+
+    /**
+     * Set data for response. This data is accessed from those functions which require to send a response
+     * to the bot that sent the following requests: WHO_IS, IS_BANNED
+     */
+    void setResponseData(const QString &responseIp, quint16 responsePort);
 
     Config::CouchDbStruct m_couchDbStruct;
     GeoIpChecker *m_geoIpChecker;
     QNetworkAccessManager *m_networkManager;
     QNetworkReply *m_reply;
+    ResponseDispatcher *m_responseDispatcher;
 };
 
 
