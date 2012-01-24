@@ -27,6 +27,7 @@ private Q_SLOTS:
     void onButtonBoxClicked(QAbstractButton *button);
     void onDisconnected() { qDebug("DISCONNECTED");};
     void onEditingFinished();
+    void onReadyRead();
     void onPreviewButtonClicked();
     void onSocketError(QAbstractSocket::SocketError err);
 

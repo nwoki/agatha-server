@@ -26,6 +26,8 @@ Dialog::Dialog(QWidget* parent)
     commands << "add" << "ban" << "isBanned" << "whoIs";
     m_ui->commandCombo->addItems(commands);
 
+    m_socket->bind(QHostAddress::Any, 1234);
+
     setupSignalsAndSlots();
     show();
 }
@@ -66,6 +68,14 @@ void Dialog::onEditingFinished()
 {
     // disconnect from previous host
     m_socket->disconnectFromHost();
+}
+
+void Dialog::onReadyRead()
+{
+    QByteArray incoming;
+    incoming.resize(m_socket->pendingDatagramSize());
+    qDebug() << "READY READ: " << m_socket->readDatagram(incoming.data(), incoming.size());
+    qDebug() << "DATA: " << incoming;
 }
 
 void Dialog::onPreviewButtonClicked()
@@ -117,23 +127,18 @@ void Dialog::sendPacketToServer()
         return;
     }
 
-    if (m_socket->peerAddress().toString() != m_ui->serverIpLineEdit->text()) {
-        m_socket->connectToHost(QHostAddress(m_ui->serverIpLineEdit->text()), port);
-    }
-
     if (m_socket->peerAddress().isNull()) {
         return;
     }
 
-    // send packet
-    qDebug() << "Writing to host: " << m_socket->peerAddress() << "/" << m_ui->serverIpLineEdit->text() << " message: " << prepareMessage();
-    m_socket->write(prepareMessage());
+    m_socket->writeDatagram(prepareMessage(), QHostAddress(m_ui->serverIpLineEdit->text()), port);
 }
 
 void Dialog::setupSignalsAndSlots()
 {
     connect(m_socket, SIGNAL(disconnected()), this, SLOT(onDisconnected()));
     connect(m_socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(onSocketError(QAbstractSocket::SocketError)));
+    connect(m_socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()));
     connect(m_ui->previewButton, SIGNAL(clicked()), this, SLOT(onPreviewButtonClicked()));
     connect(m_ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(onButtonBoxClicked(QAbstractButton*)));
     connect(m_ui->serverIpLineEdit, SIGNAL(editingFinished()), this, SLOT(onEditingFinished()));

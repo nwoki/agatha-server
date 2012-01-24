@@ -56,6 +56,7 @@ void CommandExecuter::execute(Command cmd
 
     qDebug() << "CommandExecuter::execute " << cmd << " for " << game;
     qDebug() << "Count " << player.count();
+    qDebug() << "Send response to: " << responseIp << " : " << responsePort;
 
     qDebug() << player["nick"].toString();
     qDebug() << player["gear"].toString();
@@ -64,7 +65,7 @@ void CommandExecuter::execute(Command cmd
     qDebug() << player["guid"].toString();
 
 #ifdef DEBUG_MODE
-    qDebug() << "PLAYER IP: " << player["ip"].toString() << " LOCATED @ " << m_geoIpChecker->location(player["ip"].toString());
+    qDebug() << "[CommandExecuter::execute] PLAYER IP: " << player["ip"].toString() << " LOCATED @ " << m_geoIpChecker->location(player["ip"].toString());
 #endif
 
     QNetworkRequest request;
@@ -91,7 +92,7 @@ void CommandExecuter::execute(Command cmd
         request.setUrl(requestUrl);
 
 #ifdef DEBUG_MODE
-        qDebug() << "REQUEST URL IS: " << requestUrl;
+        qDebug() << "[CommandExecuter::execute] REQUEST URL IS: " << requestUrl;
 #endif
 
         m_reply = m_networkManager->get(request);
@@ -111,13 +112,15 @@ void CommandExecuter::onReplyError(QNetworkReply::NetworkError error)
 
 void CommandExecuter::onWhoIsReady()
 {
+    QByteArray response = m_reply->readAll();
 #ifdef DEBUG_MODE
-    qDebug() << "[CommandExecuter::onWhoIsReady] : " << m_reply->readAll();
+    qDebug() << "[CommandExecuter::onWhoIsReady] : " << response;
 #endif
 
     /// TODO send back to bot
     /// TODO filter response message to extract only the desired player object. Don't
     /// need all the extra stuff couchDB sends back
+    m_responseDispatcher->sendResponse(response);
 
     m_reply->deleteLater();
 }

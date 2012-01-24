@@ -25,21 +25,27 @@ ResponseDispatcher::~ResponseDispatcher()
 
 void ResponseDispatcher::setResponseRecipient(const QString& recIp, quint16 recPort)
 {
+    qDebug() << "[ResponseDispatcher::setResponseRecipient]: recipientIp: " << recIp << " recPort: " << recPort;
+
     m_responseSocket->connectToHost(QHostAddress(recIp), recPort, QIODevice::WriteOnly);
 
-    qDebug() << "SENDING PORT: " << recPort;
+    qDebug() << "SENDING ip:port: " << recIp << ":" << recPort;
     /// TODO connects here
 }
 
 
 void ResponseDispatcher::sendResponse(const QByteArray& response)
 {
-    qDebug("[ResponseDispatcher::sendResponse]");
+    qDebug() << "[ResponseDispatcher::sendResponse]: " << response << " to " << m_recipientIp << " : " << m_recipientPort;
+
     if (!m_responseSocket) {
-        /// TODO handle error
+        /// TODO handle error (should never happen)
     }
 
     m_responseSocket->write(response);
+
+    // always disconnect from host to enable new connection
+    m_responseSocket->disconnectFromHost();
 }
 
 

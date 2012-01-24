@@ -67,7 +67,9 @@ void Server::parseIncomingData()
     rcvData.resize(m_udpSocket->pendingDatagramSize());
     m_udpSocket->readDatagram(rcvData.data(), rcvData.size(), &incomingIp, &incomingPort);
 
-    qDebug() << "RCV: " << rcvData;
+#ifdef DEBUG_MODE
+    qDebug() << "RCV DATA: " << rcvData;
+#endif
 
     QJson::Parser jsonParser;
     bool ok;
