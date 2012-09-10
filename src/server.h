@@ -26,8 +26,9 @@ class QUdpSocket;
 class Server : public QObject
 {
     Q_OBJECT
+
 public:
-    Server(Config *config, QObject *parent = 0);
+    Server(Config::ServerConfigStruct serverCfg, CommandExecuter *cmdExe, QObject *parent = 0);
     ~Server();
 
 private slots:

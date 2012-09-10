@@ -7,13 +7,14 @@
  */
 
 #include "config.h"
+#include "commandexecuter.h"
 #include "server.h"
 
 #include <QtCore/QCoreApplication>
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication *app = new QCoreApplication(argc, argv);
+    QCoreApplication app(argc, argv);
 
     QString customConfig(argv[1]);
     Config *agathaConfig;
@@ -25,7 +26,12 @@ int main(int argc, char *argv[])
         agathaConfig = new Config(customConfig);
     }
 
-    Server srvAgatha(agathaConfig);
+    CommandExecuter *cmdExe = new CommandExecuter(agathaConfig->couchDbStruct());
 
-    return app->exec();
+    Server srvAgatha(agathaConfig->serverConfigStruct(), cmdExe);
+
+    // don't need this anymore
+    agathaConfig->deleteLater();
+
+    return app.exec();
 }

@@ -38,6 +38,7 @@ Config::Config(const QString &configFile, QObject* parent)
 
 Config::~Config()
 {
+    qDebug("[Config::~Config]");
 }
 
 
@@ -57,7 +58,7 @@ void Config::loadConfigFile()
 {
     bool ok;
 
-    // SERVER
+    // AGATHA SERVER
     beginGroup("server");
     int srvPort = value("port").toInt(&ok);
 
@@ -87,7 +88,7 @@ void Config::loadConfigFile()
 
 //     DEBUG
 #ifdef DEBUG_MODE
-    qDebug() << "SERVER : " << m_serverConfigStruct.port;
+    qDebug() << "AGATHA SERVER PORT: " << m_serverConfigStruct.port;
     qDebug() << "COUCHDB : " << m_couchDbStruct.ip;
     qDebug() << "COUCHDB : " << m_couchDbStruct.port;
     qDebug() << "COUCHDB : " << m_couchDbStruct.dbName;

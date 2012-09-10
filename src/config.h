@@ -37,12 +37,13 @@ public:
         {
             QString url("http://");
 
-            url.append(ip);
-            url.append(":");
-            url.append(QString::number(port));
-            url.append("/");
-            url.append(dbName);
-            url.append("/");
+            url += ip + ":" + QString::number(port) + "/" + dbName + "/";
+//             url.append(ip);
+//             url.append(":");
+//             url.append(QString::number(port));
+//             url.append("/");
+//             url.append(dbName);
+//             url.append("/");
 
             return url;
         }

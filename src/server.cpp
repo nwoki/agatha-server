@@ -14,10 +14,10 @@
 
 #include <QtNetwork/QUdpSocket>
 
-Server::Server(Config *config, QObject *parent)
+Server::Server(Config::ServerConfigStruct serverCfg, CommandExecuter *cmdExe, QObject *parent)
     : QObject(parent)
-    , m_serverConfigStruct(config->serverConfigStruct())
-    , m_commandExecuter(new CommandExecuter(config->couchDbStruct()))
+    , m_serverConfigStruct(serverCfg)
+    , m_commandExecuter(cmdExe)
     , m_serverAuthChecker(new ServerAuthChecker)
     , m_udpSocket(new QUdpSocket(this))
 {
