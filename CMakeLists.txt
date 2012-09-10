@@ -1,4 +1,4 @@
-project(srvAgatha)
+project(agatha-server)
 
 cmake_minimum_required(VERSION 2.6)
 
@@ -18,7 +18,7 @@ add_definitions(-g -DDEBUG_MODE)
 
 include_directories(${QT_INCLUDE_DIR})
 
-set(srvAgatha_SRCS
+set(agatha-server_SRCS
     src/clierrorreporter.cpp
     src/config.cpp
     src/commandexecuter.cpp
@@ -29,14 +29,14 @@ set(srvAgatha_SRCS
     src/checkers/serverAuthChecker.cpp
 )
 
-set(srvAgatha_HDRS
+set(agatha-server_HDRS
     src/server.h
     src/config.h
     src/commandexecuter.h
     src/responsedispatcher.h
 )
 
-qt4_wrap_cpp(srvAgatha_MOC_HDRS ${srvAgatha_HDRS})
+qt4_wrap_cpp(agatha-server_MOC_HDRS ${agatha-server_HDRS})
 
 # qjson
 add_subdirectory(src/qjson/src)
@@ -44,11 +44,11 @@ add_subdirectory(src/qjson/src)
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
 # final lib
-add_executable(srvAgatha ${srvAgatha_SRCS} ${srvAgatha_MOC_HDRS})
+add_executable(agatha-server ${agatha-server_SRCS} ${agatha-server_MOC_HDRS})
 
 
 # link lib with Qt libs
-target_link_libraries(srvAgatha ${QT_LIBRARIES} qjson)
+target_link_libraries(agatha-server ${QT_LIBRARIES} qjson)
 
 # tests
 # enable_testing()
