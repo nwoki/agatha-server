@@ -35,6 +35,9 @@ Config::Config(const QString &configFile, QObject* parent)
         std::exit(1);
     }
 
+    // populate the allowed databases
+    m_allowedDbs.append("urbanterror_4_1_1");
+
     // load data
     loadConfigFile();
 
@@ -239,6 +242,14 @@ void Config::loadConfigFile()
     qDebug() << "COUCHDB : " << m_couchDbStruct.dbName;
 #endif
 
-    CliErrorReporter::printNotification("[INFO] Done!");
+    // check if the db name is supported
+    if (m_allowedDbs.contains(m_couchDbStruct.dbName)) {
+        CliErrorReporter::printNotification("[INFO] Done!");
+    } else {
+        CliErrorReporter::printError(CliErrorReporter::APPLICATION
+                                    , CliErrorReporter::ERROR
+                                    , "Database '" + m_couchDbStruct.dbName + "' not supported");
+        std::exit(1);
+    }
 }
 

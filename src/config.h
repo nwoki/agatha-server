@@ -82,6 +82,10 @@ private:
 
     QNetworkAccessManager *m_netManager;
     QNetworkReply *m_networkReply;
+
+    QList<QString> m_allowedDbs;                        /** list of allowed databases to create/use */
 };
+
+
 
 #endif  // CONFIG_H
