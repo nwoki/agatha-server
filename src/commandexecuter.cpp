@@ -1,8 +1,8 @@
 /*
- * srvAgatha
+ * commandexecuter.cpp
  *
- * This file is part of srvAgatha
- * Copyright (C) 2011-2012 Francesco Nwokeka <francesco.nwokeka@gmail.com>
+ * This file is part of agathaServer
+ * Copyright (C) 2012 Francesco Nwokeka <francesco.nwokeka@gmail.com>
  *
  */
 

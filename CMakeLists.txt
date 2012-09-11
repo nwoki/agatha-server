@@ -22,6 +22,7 @@ set(agatha-server_SRCS
     src/clierrorreporter.cpp
     src/config.cpp
     src/commandexecuter.cpp
+    src/core.cpp
     src/main.cpp
     src/responsedispatcher.cpp
     src/server.cpp
@@ -30,6 +31,7 @@ set(agatha-server_SRCS
 )
 
 set(agatha-server_HDRS
+    src/core.h
     src/server.h
     src/config.h
     src/commandexecuter.h

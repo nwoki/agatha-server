@@ -1,14 +1,13 @@
 /*
- * srvAgatha
+ * main.cpp
  *
- * This file is part of srvAgatha
- * Copyright (C) 2011-2012 Francesco Nwokeka <francesco.nwokeka@gmail.com>
+ * This file is part of agathaServer
+ * Copyright (C) 2012 Francesco Nwokeka <francesco.nwokeka@gmail.com>
  *
  */
 
-#include "config.h"
-#include "commandexecuter.h"
-#include "server.h"
+
+#include "core.h"
 
 #include <QtCore/QCoreApplication>
 
@@ -17,21 +16,16 @@ int main(int argc, char *argv[])
     QCoreApplication app(argc, argv);
 
     QString customConfig(argv[1]);
-    Config *agathaConfig;
 
-    // check if user set a custom config file
-    if (customConfig.isEmpty()) {
-        agathaConfig = new Config();
-    } else {
-        agathaConfig = new Config(customConfig);
-    }
 
-    CommandExecuter *cmdExe = new CommandExecuter(agathaConfig->couchDbStruct());
+    /**
+     * TODO
+     * The Starter object starts everything. After checking that all is ok (config),
+     * it starts the Server. Otherwise it exits
+     */
+    Core *core = new Core(customConfig);
 
-    Server srvAgatha(agathaConfig->serverConfigStruct(), cmdExe);
-
-    // don't need this anymore
-    agathaConfig->deleteLater();
+//     CommandExecuter *cmdExe = new CommandExecuter(agathaConfig->couchDbStruct());
 
     return app.exec();
 }

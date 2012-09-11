@@ -1,7 +1,7 @@
 /*
- * srvAgatha
+ * config.h
  *
- * This file is part of srvAgatha
+ * This file is part of agathaServer
  * Copyright (C) 2012 Francesco Nwokeka <francesco.nwokeka@gmail.com>
  *
  */
@@ -9,6 +9,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <QtCore/QDebug>
 #include <QtCore/QSettings>
 
 /**
@@ -16,8 +17,13 @@
  * @author Francesco Nwokeka
  */
 
+class QNetworkAccessManager;
+class QNetworkReply;
+
 class Config : public QSettings
 {
+    Q_OBJECT
+
 public:
     /** struct with server settigns */
     struct ServerConfigStruct
@@ -38,13 +44,6 @@ public:
             QString url("http://");
 
             url += ip + ":" + QString::number(port) + "/" + dbName + "/";
-//             url.append(ip);
-//             url.append(":");
-//             url.append(QString::number(port));
-//             url.append("/");
-//             url.append(dbName);
-//             url.append("/");
-
             return url;
         }
     };
@@ -55,14 +54,34 @@ public:
     Config(const QString &configFile = QString("AgathaServerCfg.cfg"), QObject *parent = 0);
     ~Config();
 
-    CouchDbStruct couchDbStruct() const;            /** returns CouchDbStruct with couchDB settings */
-    ServerConfigStruct serverConfigStruct() const;  /** returns ServerConfigStruct with general server settings */
+    CouchDbStruct couchDbStruct() const;                /** returns CouchDbStruct with couchDB settings */
+    ServerConfigStruct serverConfigStruct() const;      /** returns ServerConfigStruct with general server settings */
+
+Q_SIGNALS:
+    void ready();                                       /** emitted when config object has validated all settings (db, server port etc)*/
+
+private Q_SLOTS:
+    void onCheckCouchDbReceived();
+    void onCreateDbReceived();
+    void onNetworkReplyReceived();
 
 private:
-    void loadConfigFile();                          /** load config file values */
+    void checkCouchDb();                                /** checks that we can communicate with the couch db */
+    void loadConfigFile();                              /** load config file values */
+
+    /**
+     * checks for existance of the couch database. If it's not there
+     * we attemp to create it.
+     *
+     * @returns result of the presence of the database
+     */
+    bool prepareCouchDb();
 
     CouchDbStruct m_couchDbStruct;
     ServerConfigStruct m_serverConfigStruct;
+
+    QNetworkAccessManager *m_netManager;
+    QNetworkReply *m_networkReply;
 };
 
 #endif  // CONFIG_H
