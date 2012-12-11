@@ -7,7 +7,7 @@
  */
 
 #include "../clierrorreporter.h"
-#include "serverAuthChecker.h"
+#include "serverauthchecker.h"
 
 #include <QtNetwork/QHostInfo>
 #include <QtSql/QSqlError>

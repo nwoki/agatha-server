@@ -6,7 +6,7 @@
  *
  */
 
-#include "checkers/serverAuthChecker.h"
+#include "checkers/serverauthchecker.h"
 #include "clierrorreporter.h"
 #include "server.h"
 
