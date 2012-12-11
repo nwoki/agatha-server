@@ -18,6 +18,7 @@ SOURCES += \
     config.cpp \
     core.cpp \
     main.cpp \
+    requesthandler.cpp \
     responsedispatcher.cpp \
     server.cpp \
     webservice.cpp \
@@ -40,6 +41,7 @@ HEADERS += \
     commandexecuter.h \
     config.h \
     core.h \
+    requesthandler.h \
     responsedispatcher.h \
     server.h \
     webservice.h \

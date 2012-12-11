@@ -6,15 +6,21 @@
  * Author Francesco Nwokeka
  */
 
+
+#include "requesthandler.h"
 #include "webservice.h"
+#include "qjson/include/QJson/Serializer"
 
 #include <QtCore/QDebug>
+#include <QtCore/QStringList>
+
 #include <QtNetwork/QTcpSocket>
 
 // WebService::WebService(quint16 port, QObject *parent)
 WebService::WebService(Config::ServerConfigStruct configStruct, QObject *parent)
     : QTcpServer(parent)
     , m_serverConfigStruct(configStruct)
+    , m_requestHandler(new RequestHandler)
 {
     qDebug("[WebService::WebService]");
 
@@ -34,6 +40,7 @@ WebService::WebService(Config::ServerConfigStruct configStruct, QObject *parent)
 
 WebService::~WebService()
 {
+    delete m_requestHandler;
 }
 
 
@@ -69,6 +76,35 @@ void WebService::onNewConnection()
 }
 
 
+void WebService::parseIncomingMessage(QTcpSocket *socket)
+{
+    qDebug("[WebService::parseIncomingMessage]");
+
+    // extrack info, might come in handy
+    QString message = socket->readAll();
+    QString peerAddr = socket->peerAddress().toString();
+    quint16 peerPort = socket->peerPort();
+
+    qDebug() << "[WebService::parseIncomingMessage] Peer: " << peerAddr;
+    qDebug() << "[WebService::parseIncomingMessage] Port: " << peerPort;
+    qDebug() << "[WebService::parseIncomingMessage] Message" << message;
+
+    // extract request type
+    QStringList responseParts = message.split(QRegExp("[ \r\n][ \r\n]*"));
+
+    qDebug() << "[WebService::parseIncomingMessage] responseParts: " << responseParts;
+
+//     GET: ("GET", "/", "HTTP/1.1", "User-Agent:", "curl/7.28.1", "Host:", "127.0.0.1:1337", "Accept:", "*/*", "")
+    if (responseParts[0] == "GET") {
+        m_requestHandler->handleGetRequest(responseParts);
+    } else if (responseParts[0] == "POST") {
+        m_requestHandler->handlePostRequest(responseParts);
+    } else if (responseParts[0] == "PUT") {
+        m_requestHandler->handlePutRequest(responseParts);
+    }
+}
+
+
 void WebService::readClient()
 {
     qDebug("[WebService::readClient]");
@@ -80,8 +116,7 @@ void WebService::readClient()
         return;
     }
 
-    // TODO parse message
-    qDebug() << socket->readAll();
+    parseIncomingMessage(socket);
 
     // close once i've finished reading
     socket->close();
