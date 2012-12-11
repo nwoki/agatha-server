@@ -26,6 +26,7 @@ set(agatha-server_SRCS
     src/main.cpp
     src/responsedispatcher.cpp
     src/server.cpp
+    src/webservice.cpp
     src/checkers/geoipchecker.cpp
     src/checkers/serverAuthChecker.cpp
 )
@@ -36,6 +37,7 @@ set(agatha-server_HDRS
     src/config.h
     src/commandexecuter.h
     src/responsedispatcher.h
+    src/webservice.h
 )
 
 qt4_wrap_cpp(agatha-server_MOC_HDRS ${agatha-server_HDRS})

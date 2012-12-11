@@ -84,14 +84,12 @@ Config::CouchDbStruct Config::couchDbStruct() const
 
 void Config::onCheckCouchDbReceived()
 {
-#ifdef DEBUG_MODE
     qDebug("[Config::onCheckCouchDbReceived]");
-#endif
 
     // extract code
     int httpCode = m_networkReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-    qDebug() << "Code is: " << httpCode;
+    qDebug() << "[Config::onCheckCouchDbReceived] Code is: " << httpCode;
 
     if (httpCode != 200) {
         CliErrorReporter::printError(CliErrorReporter::DATABASE
@@ -118,6 +116,9 @@ void Config::onCheckCouchDbReceived()
 
     if (found) {
         CliErrorReporter::printNotification("[INFO] Agatha server found. Using " + m_couchDbStruct.dbName + " database");
+
+        // notify that the configuration process has terminated
+        Q_EMIT ready();
     } else {
         CliErrorReporter::printNotification("[INFO] Database not found. Creating '" + m_couchDbStruct.dbName + "' database");
         prepareCouchDb();
@@ -127,22 +128,25 @@ void Config::onCheckCouchDbReceived()
 
 void Config::onCreateDbReceived()
 {
-#ifdef DEBUG_MODE
     qDebug("[Config::onCreateDbReceived]");
-#endif
 
     // extract code
     int httpCode = m_networkReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
-    qDebug() << "Code is: " << httpCode;
+    qDebug() << "[Config::onCreateDbReceived] Code is: " << httpCode;
 
     // 201 -> created
     if (httpCode == 201) {
         CliErrorReporter::printNotification("[INFO] Database '" + m_couchDbStruct.dbName + "' created");
+
+        // notify that the configuration process has terminated
+        Q_EMIT ready();
     } else {
         CliErrorReporter::printError(CliErrorReporter::DATABASE
                                     , CliErrorReporter::ERROR
                                     , m_networkReply->errorString() + "\n" + m_networkReply->readAll());
+
+        m_networkReply->deleteLater();
         std::exit(1);
     }
 

@@ -8,15 +8,14 @@
 
 
 #include "core.h"
+#include "webservice.h"
 
 #include <QtCore/QCoreApplication>
 
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
-
     QString customConfig(argv[1]);
-
 
     /**
      * TODO

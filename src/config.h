@@ -28,7 +28,7 @@ public:
     /** struct with server settigns */
     struct ServerConfigStruct
     {
-        int port;
+        quint16 port;
     };
 
     /** struct with agatha couchDb info */

@@ -18,7 +18,7 @@
  */
 
 class Config;
-class Server;
+class WebService;
 
 class Core : public QObject
 {
@@ -33,7 +33,7 @@ private Q_SLOTS:
 
 private:
     Config *m_config;
-    Server *m_server;
+    WebService *m_webservice;
 };
 
 #endif // CORE_H
