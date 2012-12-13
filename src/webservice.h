@@ -15,6 +15,11 @@
 
 class RequestHandler;
 
+
+/* NOTE
+ * Use POST to create a new resource and PUT to update a known resource
+ */
+
 class WebService : public QTcpServer
 {
     Q_OBJECT

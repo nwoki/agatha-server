@@ -13,12 +13,18 @@
 
 #include <QtCore/QDateTime>
 #include <QtCore/QVariantList>
+
 #include <QtGui/QAbstractButton>
+
+#include <QtNetwork/QNetworkAccessManager>
+#include <QtNetwork/QNetworkRequest>
 
 Dialog::Dialog(QWidget* parent)
     : QWidget(parent)
     , m_ui(new Ui::Main)
     , m_socket(new QUdpSocket)
+    , m_reply(0)
+    , m_netManager(new QNetworkAccessManager(this))
 {
     m_ui->setupUi(this);
 
@@ -26,16 +32,20 @@ Dialog::Dialog(QWidget* parent)
     commands << "add" << "ban" << "isBanned" << "whoIs";
     m_ui->commandCombo->addItems(commands);
 
+    m_ui->gametypeCombobox->addItem("UrbanTerror 4.1.x");
+
     m_socket->bind(QHostAddress::Any, 1234);
 
     setupSignalsAndSlots();
     show();
 }
 
+
 Dialog::~Dialog()
 {
     delete m_ui;
 }
+
 
 QVariantMap Dialog::createPlayerMap()
 {
@@ -48,6 +58,21 @@ QVariantMap Dialog::createPlayerMap()
     player.insert("guid", m_ui->guidLineEdit->text());
 
     return player;
+}
+
+
+QString Dialog::gametype() const
+{
+    qDebug("[Dialog::gametype]");
+
+    QString gametype;
+    int gametypeIndex = m_ui->gametypeCombobox->currentIndex();
+
+    if (gametypeIndex == 0) {                   // URBAN TERROR 4.1.x
+        gametype += "/urbanterror4_1_x";
+    }
+
+    return gametype;
 }
 
 
@@ -87,6 +112,23 @@ void Dialog::onPreviewButtonClicked()
     m_ui->textEdit->setText(prepareMessage());
 }
 
+
+void Dialog::onReplyError(QNetworkReply::NetworkError error)
+{
+    qDebug("[Dialog::onReplyError]");
+
+    qDebug() << m_reply->errorString();
+}
+
+
+void Dialog::onReplyReadyRead()
+{
+    qDebug("[Dialog::onReplyReadyRead]");
+
+    qDebug() << m_reply->readAll();
+}
+
+
 void Dialog::onSocketError(QAbstractSocket::SocketError err)
 {
     // create error message and show Error Tab
@@ -112,8 +154,43 @@ QByteArray Dialog::prepareMessage()
     return serializer.serialize(preview);
 }
 
+QString Dialog::prepareWhoisUrl()
+{
+    qDebug("[Dialog::prepareWhoisUrl]");
+
+    if (m_ui->serverIpLineEdit->text().isEmpty()) {
+        return QString();
+    }
+
+    QString url("http://");
+    url += m_ui->serverIpLineEdit->text();
+    url += ":" + m_ui->portLineEdit->text();
+    url += gametype();
+
+    // add params
+    url += "?";
+    bool firstElement = true;
+
+    if (!m_ui->playerNickLineEdit->text().isEmpty()) {
+        if (firstElement) {
+            firstElement = false;
+        } else {
+            url += "&";
+        }
+
+        url += "nick=" + m_ui->playerNickLineEdit->text();
+    }
+
+    qDebug() << "[Dialog::prepareWhoisUrl] url is: " << url;
+
+    return url;
+}
+
+
 void Dialog::sendPacketToServer()
 {
+    qDebug("[Dialog::sendPacketToServer]");
+
     bool ok;
     int port = m_ui->portLineEdit->text().toInt(&ok);
 
@@ -127,11 +204,34 @@ void Dialog::sendPacketToServer()
         return;
     }
 
-    if (m_socket->peerAddress().isNull()) {
+//     if (m_socket->peerAddress().isNull()) {
+//         qDebug("eh?");
+//         return;
+//     }
+
+    // TODO trasform in HTTP GET/POST/PUT requests
+    QString req;
+    int comboIndex = m_ui->commandCombo->currentIndex();
+
+    if (comboIndex == 0) {                                      // ADD
+        qDebug("[Dialog::sendPacketToServer] ADD");
+    } else if (comboIndex == 1) {                               // BAN
+        qDebug("[Dialog::sendPacketToServer] BAN");
+    } else if (comboIndex == 2) {                               // IS_BANNED
+        qDebug("[Dialog::sendPacketToServer] IS BANNED");
+    } else if (comboIndex == 3) {                               // WHOIS
+        qDebug("[Dialog::sendPacketToServer] WHOIS");
+        req += prepareWhoisUrl();
+    } else {
         return;
     }
 
-    m_socket->writeDatagram(prepareMessage(), QHostAddress(m_ui->serverIpLineEdit->text()), port);
+    m_reply = m_netManager->get(QNetworkRequest(QUrl((req))));
+
+    connect(m_reply, SIGNAL(finished()), this, SLOT(onReplyReadyRead()));
+    connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onReplyError(QNetworkReply::NetworkError)));
+
+//     m_socket->writeDatagram(prepareMessage(), QHostAddress(m_ui->serverIpLineEdit->text()), port);
 }
 
 void Dialog::setupSignalsAndSlots()
