@@ -37,6 +37,7 @@ public:
         ADD,
         BAN,
         IS_BANNED,
+        INVALID_COMMAND,
         WHO_IS
     };
 
@@ -77,7 +78,7 @@ private:
     void setResponseData(const QString &responseIp, quint16 responsePort);
 
     Config::CouchDbStruct m_couchDbStruct;
-    GeoIpChecker *m_geoIpChecker;
+//     GeoIpChecker *m_geoIpChecker;    // TODO
     QNetworkAccessManager *m_networkManager;
     QNetworkReply *m_reply;
     ResponseDispatcher *m_responseDispatcher;

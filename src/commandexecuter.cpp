@@ -18,13 +18,13 @@
 CommandExecuter::CommandExecuter(Config::CouchDbStruct couchDbStruct, QObject *parent)
     : QObject(parent)
     , m_couchDbStruct(couchDbStruct)
-    , m_geoIpChecker(new GeoIpChecker)
+//     , m_geoIpChecker(new GeoIpChecker)
     , m_networkManager(new QNetworkAccessManager(this))
     , m_responseDispatcher(new ResponseDispatcher(this))
 {
     /// TODO make srv->couchDB methods synchronous
     /*
-     * Q AsyncClass *class;                                                                                                                            *
+     * Q AsyncClass *class; 
      * QEventLoop e;
      *
      * connect(class, SIGNAL(finished()), &e, SLOT(quit()));
@@ -40,8 +40,7 @@ CommandExecuter::CommandExecuter(Config::CouchDbStruct couchDbStruct, QObject *p
 
 CommandExecuter::~CommandExecuter()
 {
-    delete m_geoIpChecker;
-    delete m_networkManager;
+//     delete m_geoIpChecker;
 }
 
 
@@ -64,9 +63,7 @@ void CommandExecuter::execute(Command cmd
     qDebug() << player["weaponMode"].toString();
     qDebug() << player["guid"].toString();
 
-#ifdef DEBUG_MODE
-    qDebug() << "[CommandExecuter::execute] PLAYER IP: " << player["ip"].toString() << " LOCATED @ " << m_geoIpChecker->location(player["ip"].toString());
-#endif
+//     qDebug() << "[CommandExecuter::execute] PLAYER IP: " << player["ip"].toString() << " LOCATED @ " << m_geoIpChecker->location(player["ip"].toString());
 
     QNetworkRequest request;
     QString requestUrl(m_couchDbStruct.queryUrl());
@@ -91,9 +88,7 @@ void CommandExecuter::execute(Command cmd
         requestUrl.append(token);
         request.setUrl(requestUrl);
 
-#ifdef DEBUG_MODE
         qDebug() << "[CommandExecuter::execute] REQUEST URL IS: " << requestUrl;
-#endif
 
         m_reply = m_networkManager->get(request);
 
@@ -113,9 +108,9 @@ void CommandExecuter::onReplyError(QNetworkReply::NetworkError error)
 void CommandExecuter::onWhoIsReady()
 {
     QByteArray response = m_reply->readAll();
-#ifdef DEBUG_MODE
+
     qDebug() << "[CommandExecuter::onWhoIsReady] : " << response;
-#endif
+
 
     /// TODO send back to bot
     /// TODO filter response message to extract only the desired player object. Don't

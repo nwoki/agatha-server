@@ -10,8 +10,11 @@
 #ifndef REQUESTHANDLER_H
 #define REQUESTHANDLER_H
 
+#include "commandexecuter.h"
+
 #include <QtCore/QObject>
-#include <QtCore/QStringList>
+
+class QJsonObject;
 
 /**
  * Class that handles the RESTFUL requests parsed from the webservice
@@ -25,11 +28,13 @@ public:
     RequestHandler(QObject *parent = 0);
     ~RequestHandler();
 
-    void handleGetRequest(const QStringList &responseParts);
-    void handlePostRequest(const QStringList &responseParts);
-    void handlePutRequest(const QStringList &responseParts);
+    void handleGetRequest(const QByteArray &json);
+    void handlePostRequest(const QByteArray &json);
+    void handlePutRequest(const QByteArray &json);
 
 private:
+    CommandExecuter::Command command(const QJsonObject &jsonObj);  // returns command value taken from json info
+    QJsonObject jsonObject(const QByteArray &jsonData);            // transforms the json data to a QJsonObject
 };
 
 #endif // REQUESTHANDLER_H

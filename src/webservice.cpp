@@ -7,21 +7,22 @@
  */
 
 
+#include "commandexecuter.h"
 #include "requesthandler.h"
 #include "webservice.h"
-#include "qjson/include/QJson/Serializer"
 
 #include <QtCore/QDebug>
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
+#include <QtCore/QRegExp>
 
 #include <QtNetwork/QTcpSocket>
 
-// WebService::WebService(quint16 port, QObject *parent)
 // WebService::WebService(Config::ServerConfigStruct configStruct, QObject *parent)
-WebService::WebService(quint16 port, QObject *parent)
+WebService::WebService(Config::CouchDbStruct couchDbStruct, quint16 port, QObject *parent)
     : QTcpServer(parent)
-    , m_requestHandler(new RequestHandler(parent))        // TODO change parent, set it to "this"
+    , m_requestHandler(new RequestHandler(this))
+    , m_commandExecuter(new CommandExecuter(couchDbStruct, this))
 {
     qDebug("[WebService::WebService]");
 
@@ -97,13 +98,16 @@ void WebService::parseIncomingMessage(QTcpSocket *socket)
 
     qDebug() << "[WebService::parseIncomingMessage] responseParts: " << responseParts;
 
+    // TODO check token + ip validity (discuss this with seven)
+
 //     GET: ("GET", "/", "HTTP/1.1", "User-Agent:", "curl/7.28.1", "Host:", "127.0.0.1:1337", "Accept:", "*/*", "")
-    if (responseParts[0] == "GET") {
-        m_requestHandler->handleGetRequest(responseParts);
-    } else if (responseParts[0] == "POST") {
-        m_requestHandler->handlePostRequest(responseParts);
-    } else if (responseParts[0] == "PUT") {
-        m_requestHandler->handlePutRequest(responseParts);
+    // last item in the list is the json data
+    if (responseParts.first() == "GET") {
+        m_requestHandler->handleGetRequest(responseParts.last().toUtf8());
+    } else if (responseParts.first() == "POST") {
+        m_requestHandler->handlePostRequest(responseParts.last().toUtf8());
+    } else if (responseParts.first() == "PUT") {
+        m_requestHandler->handlePutRequest(responseParts.last().toUtf8());
     }
 }
 

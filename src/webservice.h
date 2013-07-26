@@ -13,6 +13,7 @@
 
 #include "config.h"
 
+class CommandExecuter;
 class RequestHandler;
 
 
@@ -20,15 +21,13 @@ class RequestHandler;
  * Use POST to create a new resource and PUT to update a known resource
  */
 
-// TODO make this class QObject.
-
 class WebService : public QTcpServer
 {
     Q_OBJECT
 
 public:
 //     WebService(Config::ServerConfigStruct configStruct, QObject *parent = 0);
-    WebService(quint16 port = 1337, QObject *parent = 0);
+    WebService(Config::CouchDbStruct couchDbStruct, quint16 port = 1337, QObject *parent = 0);
     ~WebService();
 
 private Q_SLOTS:
@@ -43,6 +42,7 @@ private:
 
     Config::ServerConfigStruct m_serverConfigStruct;
     RequestHandler *m_requestHandler;
+    CommandExecuter *m_commandExecuter;
 };
 
 #endif // WEBSERVICE_H
