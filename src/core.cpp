@@ -31,5 +31,8 @@ void Core::onConfigReady()
     qDebug("[Core::onConfigReady]");
 
     // start server
-    m_webservice = new WebService(m_config->serverConfigStruct(), this);
+//     m_webservice = new WebService(m_config->serverConfigStruct(), this);
+
+    // just need the port for now. In case things change, i can still default back to the struct
+    m_webservice = new WebService(m_config->serverConfigStruct().port, this);
 }

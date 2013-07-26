@@ -12,17 +12,21 @@
 #include "qjson/include/QJson/Serializer"
 
 #include <QtCore/QDebug>
+#include <QtCore/QObject>
 #include <QtCore/QStringList>
 
 #include <QtNetwork/QTcpSocket>
 
 // WebService::WebService(quint16 port, QObject *parent)
-WebService::WebService(Config::ServerConfigStruct configStruct, QObject *parent)
+// WebService::WebService(Config::ServerConfigStruct configStruct, QObject *parent)
+WebService::WebService(quint16 port, QObject *parent)
     : QTcpServer(parent)
-    , m_serverConfigStruct(configStruct)
-    , m_requestHandler(new RequestHandler)
+    , m_requestHandler(new RequestHandler(parent))        // TODO change parent, set it to "this"
 {
     qDebug("[WebService::WebService]");
+
+    // set config info
+    m_serverConfigStruct.port = port;
 
     // TODO check port binding validity?
 //     if (m_port < 1024) {
@@ -40,7 +44,6 @@ WebService::WebService(Config::ServerConfigStruct configStruct, QObject *parent)
 
 WebService::~WebService()
 {
-    delete m_requestHandler;
 }
 
 

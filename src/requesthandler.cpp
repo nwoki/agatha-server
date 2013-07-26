@@ -10,7 +10,8 @@
 #include "requesthandler.h"
 
 
-RequestHandler::RequestHandler()
+RequestHandler::RequestHandler(QObject *parent)
+    : QObject(parent)
 {
     qDebug("[RequestHandler::RequestHandler]");
 }
@@ -21,19 +22,19 @@ RequestHandler::~RequestHandler()
 }
 
 
-void RequestHandler::handleGetRequest(const QStringList& responseParts)
+void RequestHandler::handleGetRequest(const QStringList &responseParts)
 {
     qDebug("[RequestHandler::handleGetRequest]");
 }
 
 
-void RequestHandler::handlePostRequest(const QStringList& responseParts)
+void RequestHandler::handlePostRequest(const QStringList &responseParts)
 {
     qDebug("[RequestHandler::handlePostRequest]");
 }
 
 
-void RequestHandler::handlePutRequest(const QStringList& responseParts)
+void RequestHandler::handlePutRequest(const QStringList &responseParts)
 {
     qDebug("[RequestHandler::handlePutRequest]");
 }

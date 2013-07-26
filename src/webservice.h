@@ -20,12 +20,15 @@ class RequestHandler;
  * Use POST to create a new resource and PUT to update a known resource
  */
 
+// TODO make this class QObject.
+
 class WebService : public QTcpServer
 {
     Q_OBJECT
 
 public:
-    WebService(Config::ServerConfigStruct configStruct, QObject *parent = 0);
+//     WebService(Config::ServerConfigStruct configStruct, QObject *parent = 0);
+    WebService(quint16 port = 1337, QObject *parent = 0);
     ~WebService();
 
 private Q_SLOTS:

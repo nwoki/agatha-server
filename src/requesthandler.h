@@ -10,17 +10,19 @@
 #ifndef REQUESTHANDLER_H
 #define REQUESTHANDLER_H
 
+#include <QtCore/QObject>
 #include <QtCore/QStringList>
 
 /**
  * Class that handles the RESTFUL requests parsed from the webservice
  */
 
-class RequestHandler
+class RequestHandler : public QObject
 {
+    Q_OBJECT
 
 public:
-    RequestHandler();
+    RequestHandler(QObject *parent = 0);
     ~RequestHandler();
 
     void handleGetRequest(const QStringList &responseParts);
@@ -28,7 +30,6 @@ public:
     void handlePutRequest(const QStringList &responseParts);
 
 private:
-
 };
 
 #endif // REQUESTHANDLER_H

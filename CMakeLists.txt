@@ -1,62 +1,36 @@
 project(agatha-server)
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.9)
 
-# Find Qt4. Need this to link and create static lib
-FIND_PACKAGE(Qt4 REQUIRED)
+find_package(Qt5 COMPONENTS Core Network Sql)
 
-set(QT_USE_QTNETWORK TRUE)
-set(QT_USE_QTSQL TRUE)
+set(CMAKE_AUTOMOC TRUE)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-include(${QT_USE_FILE})
-add_definitions(${QT_DEFINITIONS})
+# C++11
+if (CMAKE_COMPILER_IS_GNUCXX)
+   execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
+   if (GCC_VERSION VERSION_GREATER 4.7 OR GCC_VERSION VERSION_EQUAL 4.7)
+        message(STATUS "C++11 activated.")
+        add_definitions("-std=gnu++11")
+   elseif (GCC_VERSION VERSION_GREATER 4.3 OR GCC_VERSION VERSION_EQUAL 4.3)
+        message(WARNING "C++0x activated. If you get any errors update to a compiler which fully supports C++11")
+        add_definitions("-std=gnu++0x")
+   else ()
+        message(FATAL_ERROR "C++11 needed. Therefore a gcc compiler with a version higher than 4.3 is needed.")   
+   endif()
+else (CMAKE_COMPILER_IS_GNUCXX)
+   add_definitions("-std=c++0x")
+endif (CMAKE_COMPILER_IS_GNUCXX)
 
-# for debug
-# -DDEBUG_MODE  (application debug mode)
-# -g            (gdb symbols)
-add_definitions(-g -DDEBUG_MODE)
 
-include_directories(${QT_INCLUDE_DIR})
-
-set(agatha-server_SRCS
-    src/clierrorreporter.cpp
-    src/config.cpp
-    src/commandexecuter.cpp
-    src/core.cpp
-    src/main.cpp
-    src/responsedispatcher.cpp
-    src/server.cpp
-    src/webservice.cpp
-    src/checkers/geoipchecker.cpp
-    src/checkers/serverAuthChecker.cpp
-)
-
-set(agatha-server_HDRS
-    src/core.h
-    src/server.h
-    src/config.h
-    src/commandexecuter.h
-    src/responsedispatcher.h
-    src/webservice.h
-)
-
-qt4_wrap_cpp(agatha-server_MOC_HDRS ${agatha-server_HDRS})
-
-# qjson
-add_subdirectory(src/qjson/src)
+# # qjson
+# add_subdirectory(src/qjson/src)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
-# final lib
-add_executable(agatha-server ${agatha-server_SRCS} ${agatha-server_MOC_HDRS})
-
-
-# link lib with Qt libs
-target_link_libraries(agatha-server ${QT_LIBRARIES} qjson)
-
-# tests
-# enable_testing()
-# add_subdirectory(tests)
+# src
+add_subdirectory(src)
 
 # test app for sending custom text to srv
-add_subdirectory(testapp)
+# add_subdirectory(testapp)

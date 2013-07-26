@@ -25,8 +25,7 @@ Config::Config(const QString &configFile, QObject* parent)
     // be sure config file exists
     if (!QFile::exists(fileName())) {
         QString errorMsg("Can't find config file : '");
-        errorMsg.append(fileName());
-        errorMsg.append("'");
+        errorMsg += fileName() +  "'";
 
         CliErrorReporter::printError(CliErrorReporter::APPLICATION
                                     , CliErrorReporter::CRITICAL
