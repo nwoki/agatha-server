@@ -21,8 +21,7 @@
 // WebService::WebService(Config::ServerConfigStruct configStruct, QObject *parent)
 WebService::WebService(Config::CouchDbStruct couchDbStruct, quint16 port, QObject *parent)
     : QTcpServer(parent)
-    , m_requestHandler(new RequestHandler(this))
-    , m_commandExecuter(new CommandExecuter(couchDbStruct, this))
+    , m_requestHandler(new RequestHandler(couchDbStruct, this))
 {
     qDebug("[WebService::WebService]");
 
@@ -52,7 +51,7 @@ void WebService::discardClient()
 {
     qDebug("[WebService::discardClient]");
 
-    QTcpSocket *socket = (QTcpSocket*)sender();
+    QTcpSocket *socket = qobject_cast<QTcpSocket*>(sender());
     socket->deleteLater();
 
     qDebug("[WebService::discardClient] client disconnected");
@@ -103,7 +102,7 @@ void WebService::parseIncomingMessage(QTcpSocket *socket)
 //     GET: ("GET", "/", "HTTP/1.1", "User-Agent:", "curl/7.28.1", "Host:", "127.0.0.1:1337", "Accept:", "*/*", "")
     // last item in the list is the json data
     if (responseParts.first() == "GET") {
-        m_requestHandler->handleGetRequest(responseParts.last().toUtf8());
+        m_requestHandler->handleGetRequest(responseParts.last().toUtf8(), socket);
     } else if (responseParts.first() == "POST") {
         m_requestHandler->handlePostRequest(responseParts.last().toUtf8());
     } else if (responseParts.first() == "PUT") {
@@ -126,7 +125,7 @@ void WebService::readClient()
     parseIncomingMessage(socket);
 
     // close once i've finished reading
-    socket->close();
+//     socket->close();
 }
 
 

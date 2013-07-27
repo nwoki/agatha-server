@@ -7,7 +7,6 @@ set(agatha-server_SRCS
     core.cpp
     main.cpp
     requesthandler.cpp
-    responsedispatcher.cpp
     webservice.cpp
 )
 
@@ -16,7 +15,6 @@ set(agatha-server_HDRS
     config.h
     commandexecuter.h
     requesthandler.h
-    responsedispatcher.h
     webservice.h
 )
 

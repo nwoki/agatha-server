@@ -9,32 +9,18 @@
 #include "checkers/geoipchecker.h"
 #include "clierrorreporter.h"
 #include "commandexecuter.h"
-#include "responsedispatcher.h"
 
 #include <QtCore/QDebug>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
+#include <QtNetwork/QTcpSocket>
 
 CommandExecuter::CommandExecuter(Config::CouchDbStruct couchDbStruct, QObject *parent)
     : QObject(parent)
     , m_couchDbStruct(couchDbStruct)
 //     , m_geoIpChecker(new GeoIpChecker)
     , m_networkManager(new QNetworkAccessManager(this))
-    , m_responseDispatcher(new ResponseDispatcher(this))
 {
-    /// TODO make srv->couchDB methods synchronous
-    /*
-     * Q AsyncClass *class; 
-     * QEventLoop e;
-     *
-     * connect(class, SIGNAL(finished()), &e, SLOT(quit()));
-     *
-     * class->performAsyncOp();
-     * e.exec();
-     *
-     * // exec returns when performAsyncOp has ended. Class is stuck in a loop but
-     * the application isn't blocked, as e is a children of the main event loop
-     */
 }
 
 
@@ -48,22 +34,19 @@ void CommandExecuter::execute(Command cmd
                             , const QString &token
                             , const QString &game
                             , const QVariantMap &player
-                            , const QString &responseIp
-                            , quint16 responsePort)
+                            , QTcpSocket *httpSocket)
 {
     ///TODO add geoloc position and timestamp before sending to couchDB. Cache data before writing to couch.
+    // TODO format queries according to what's written on the wiki
 
     qDebug() << "CommandExecuter::execute " << cmd << " for " << game;
     qDebug() << "Count " << player.count();
-    qDebug() << "Send response to: " << responseIp << " : " << responsePort;
 
     qDebug() << player["nick"].toString();
     qDebug() << player["gear"].toString();
     qDebug() << player["ip"].toString();
     qDebug() << player["weaponMode"].toString();
     qDebug() << player["guid"].toString();
-
-//     qDebug() << "[CommandExecuter::execute] PLAYER IP: " << player["ip"].toString() << " LOCATED @ " << m_geoIpChecker->location(player["ip"].toString());
 
     QNetworkRequest request;
     QString requestUrl(m_couchDbStruct.queryUrl());
@@ -81,8 +64,6 @@ void CommandExecuter::execute(Command cmd
     } else if (cmd == IS_BANNED) {
 
     } else if (cmd == WHO_IS) {
-        m_responseDispatcher->setResponseRecipient(responseIp, responsePort);
-
         requestUrl.append(player["guid"].toString());
         requestUrl.append("-");
         requestUrl.append(token);
@@ -90,48 +71,45 @@ void CommandExecuter::execute(Command cmd
 
         qDebug() << "[CommandExecuter::execute] REQUEST URL IS: " << requestUrl;
 
-        m_reply = m_networkManager->get(request);
+        QNetworkReply *reply = m_networkManager->get(request);
+        reply->setProperty("token", token);
 
-        connect(m_reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onReplyError(QNetworkReply::NetworkError)));
-        connect(m_reply, SIGNAL(readyRead()), this, SLOT(onWhoIsReady()));
+        connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onReplyError(QNetworkReply::NetworkError)));
+        connect(reply, SIGNAL(readyRead()), this, SLOT(onWhoIsReady()));
     }
+
+    // store the http socket with the corrisponding token (unique)
+    m_httpSocketHash.insert(token, httpSocket);
 }
 
 
 void CommandExecuter::onReplyError(QNetworkReply::NetworkError error)
 {
-    CliErrorReporter::printError(CliErrorReporter::NETWORK, CliErrorReporter::CRITICAL, m_reply->errorString());
-    m_reply->deleteLater();
+    qDebug("[CommandExecuter::onReplyError]");
+
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+
+    CliErrorReporter::printError(CliErrorReporter::NETWORK, CliErrorReporter::CRITICAL, reply->errorString());
+    m_httpSocketHash.value(reply->property("token").toString())->close();
+    reply->deleteLater();
 }
 
 
 void CommandExecuter::onWhoIsReady()
 {
-    QByteArray response = m_reply->readAll();
+    qDebug("[CommandExecuter::onWhoIsReady]");
 
-    qDebug() << "[CommandExecuter::onWhoIsReady] : " << response;
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    QString replyToken = reply->property("token").toString();
+    QByteArray response = reply->readAll();
 
+    qDebug() << "[CommandExecuter::onWhoIsReady] : " << response << " from reply with name: " << reply->property("token").toString();
 
-    /// TODO send back to bot
-    /// TODO filter response message to extract only the desired player object. Don't
-    /// need all the extra stuff couchDB sends back
-    m_responseDispatcher->sendResponse(response);
+    // send couch db info back to the bot
+    m_httpSocketHash.value(reply->property("token").toString())->write(response);
 
-    m_reply->deleteLater();
+    // close the socket, we don't need it anymore
+    m_httpSocketHash.value(reply->property("token").toString())->close();
+
+    reply->deleteLater();
 }
-
-
-void CommandExecuter::clearResponseData()
-{
-//     m_responseIp.clear();
-}
-
-
-void CommandExecuter::setResponseData(const QString &responseIp, quint16 responsePort)
-{
-    m_responseDispatcher->setResponseRecipient(responseIp, responsePort);
-}
-
-
-
-

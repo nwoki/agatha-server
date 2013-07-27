@@ -14,7 +14,9 @@
 
 #include <QtCore/QObject>
 
+class CommandExecuter;
 class QJsonObject;
+class QTcpSocket;
 
 /**
  * Class that handles the RESTFUL requests parsed from the webservice
@@ -25,16 +27,18 @@ class RequestHandler : public QObject
     Q_OBJECT
 
 public:
-    RequestHandler(QObject *parent = 0);
+    RequestHandler(Config::CouchDbStruct couchDbStruct, QObject *parent = 0);
     ~RequestHandler();
 
-    void handleGetRequest(const QByteArray &json);
+    void handleGetRequest(const QByteArray &json, QTcpSocket *httpSocket);
     void handlePostRequest(const QByteArray &json);
     void handlePutRequest(const QByteArray &json);
 
 private:
     CommandExecuter::Command command(const QJsonObject &jsonObj);  // returns command value taken from json info
     QJsonObject jsonObject(const QByteArray &jsonData);            // transforms the json data to a QJsonObject
+
+    CommandExecuter *m_commandExecuter;
 };
 
 #endif // REQUESTHANDLER_H

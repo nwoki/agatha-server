@@ -13,7 +13,6 @@
 
 #include "config.h"
 
-class CommandExecuter;
 class RequestHandler;
 
 
@@ -42,7 +41,6 @@ private:
 
     Config::ServerConfigStruct m_serverConfigStruct;
     RequestHandler *m_requestHandler;
-    CommandExecuter *m_commandExecuter;
 };
 
 #endif // WEBSERVICE_H

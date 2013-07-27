@@ -8,6 +8,7 @@
  */
 
 #include "clierrorreporter.h"
+#include "commandexecuter.h"
 #include "requesthandler.h"
 
 #include <QtCore/QDebug>
@@ -16,9 +17,12 @@
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonParseError>
 
+#include <QtNetwork/QTcpSocket>
 
-RequestHandler::RequestHandler(QObject *parent)
+
+RequestHandler::RequestHandler(Config::CouchDbStruct couchDbStruct, QObject *parent)
     : QObject(parent)
+    , m_commandExecuter(new CommandExecuter(couchDbStruct, this))
 {
 }
 
@@ -50,18 +54,24 @@ CommandExecuter::Command RequestHandler::command(const QJsonObject &jsonObj)
 }
 
 
-void RequestHandler::handleGetRequest(const QByteArray &json)
+void RequestHandler::handleGetRequest(const QByteArray &json, QTcpSocket *httpSocket)
 {
     qDebug("[RequestHandler::handleGetRequest]");
     qDebug() << "[RequestHandler::handlePostRequest] json to handle: " << json;
 
     QJsonObject jsonObj = jsonObject(json);
 
-    if (jsonObj.isEmpty()) {
+    // security checks
+    if (jsonObj.isEmpty() || jsonObj.value("token").toString().isEmpty()) {
+        // return error 400 (bad request)
+        httpSocket->write("{\"error\":\"400\",\"reason\":\"missing gameserver hash\"");
+        httpSocket->close();
         return;
     }
 
     CommandExecuter::Command cmd = command(jsonObj);
+
+    m_commandExecuter->execute(CommandExecuter::WHO_IS, "token", "", QVariantMap(), httpSocket);
 }
 
 
