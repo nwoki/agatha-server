@@ -35,7 +35,7 @@ Config::Config(const QString &configFile, QObject* parent)
     }
 
     // populate the allowed databases
-    m_allowedDbs.append("urbanterror_4_1_1");
+    m_allowedDbs.append("urbanterror_4_1_1");   // urban terror 4.1.1
 
     // load data
     loadConfigFile();
@@ -223,7 +223,7 @@ void Config::loadConfigFile()
     endGroup();
 
     // COUCHDB
-    beginGroup("couchDb");
+    beginGroup("agathaNode");
 
     m_couchDbStruct.ip = value("ip").toString();
     int dbPort = value("port").toInt(&ok);
@@ -234,7 +234,7 @@ void Config::loadConfigFile()
     }
 
     m_couchDbStruct.port = dbPort;
-    m_couchDbStruct.dbName = value("dbName").toString();
+    m_couchDbStruct.dbName = value("databaseName").toString();
 
     endGroup();
 

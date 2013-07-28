@@ -83,7 +83,12 @@ private:
     QNetworkAccessManager *m_netManager;
     QNetworkReply *m_networkReply;
 
-    QList<QString> m_allowedDbs;                        /** list of allowed databases to create/use */
+    /**
+     * list of allowed game databases agatha supports. These values are hardcoded.
+     * A check is made upon configuration loading. If the user specifies a database that's not supported,
+     * the agatha-server node fails to start
+     */
+    QList<QString> m_allowedDbs;
 };
 
 
