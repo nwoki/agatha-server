@@ -2,8 +2,9 @@
  * commandexecuter.cpp
  *
  * This file is part of agathaServer
- * Copyright (C) 2012 Francesco Nwokeka <francesco.nwokeka@gmail.com>
+ * Copyright (C) 2012-2013 Francesco Nwokeka <francesco.nwokeka@gmail.com>
  *
+ * Author Francesco Nwokeka <francesco.nwokeka@gmail.com>
  */
 
 #include "checkers/geoipchecker.h"
@@ -11,6 +12,8 @@
 #include "commandexecuter.h"
 
 #include <QtCore/QDebug>
+#include <QtCore/QString>
+
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QTcpSocket>
@@ -36,6 +39,8 @@ void CommandExecuter::execute(Command cmd
                             , const QVariantMap &player
                             , QTcpSocket *httpSocket)
 {
+    qDebug("[CommandExecuter::execute]");
+
     ///TODO add geoloc position and timestamp before sending to couchDB. Cache data before writing to couch.
     // TODO format queries according to what's written on the wiki
 
@@ -72,13 +77,21 @@ void CommandExecuter::execute(Command cmd
         qDebug() << "[CommandExecuter::execute] REQUEST URL IS: " << requestUrl;
 
         QNetworkReply *reply = m_networkManager->get(request);
+
+        /*
+         * add the gameserver token (couchdb _id given to the gameserver automatically) so that i can identify the request
+         * when it comes back
+         */
         reply->setProperty("token", token);
 
         connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(onReplyError(QNetworkReply::NetworkError)));
-        connect(reply, SIGNAL(readyRead()), this, SLOT(onWhoIsReady()));
+        connect(reply, SIGNAL(finished()), this, SLOT(onWhoIsFinished()));
     }
 
-    // store the http socket with the corrisponding token (unique)
+    /*
+     * store the http socket with the corrisponding token (unique). This way i still have the tcp socket with the bot that sent
+     * the request and can send back the answer
+     */
     m_httpSocketHash.insert(token, httpSocket);
 }
 
@@ -95,15 +108,20 @@ void CommandExecuter::onReplyError(QNetworkReply::NetworkError error)
 }
 
 
-void CommandExecuter::onWhoIsReady()
+void CommandExecuter::onWhoIsFinished()
 {
-    qDebug("[CommandExecuter::onWhoIsReady]");
+    qDebug("[CommandExecuter::onWhoIsFinished]");
 
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+
+    if (reply->error() != QNetworkReply::NoError) {
+        return;
+    }
+
     QString replyToken = reply->property("token").toString();
     QByteArray response = reply->readAll();
 
-    qDebug() << "[CommandExecuter::onWhoIsReady] : " << response << " from reply with name: " << reply->property("token").toString();
+    qDebug() << "[CommandExecuter::onWhoIsFinished] : " << response << " from reply with name: " << reply->property("token").toString();
 
     // send couch db info back to the bot
     m_httpSocketHash.value(reply->property("token").toString())->write(response);

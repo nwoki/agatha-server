@@ -3,7 +3,8 @@
  *
  * This file is part of Agatha
  * Copyright (C) 2012-2013 Francesco Nwokeka <francesco.nwokeka@gmail.com>
- * Author Francesco Nwokeka
+ *
+ * Author Francesco Nwokeka <francesco.nwokeka@gmail.com>
  */
 
 #ifndef WEBSERVICE_H

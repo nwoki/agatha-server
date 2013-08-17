@@ -1,6 +1,6 @@
 set(agatha-server_SRCS
     checkers/geoipchecker.cpp
-    checkers/serverauthchecker.cpp
+#     checkers/serverauthchecker.cpp
     clierrorreporter.cpp
     config.cpp
     commandexecuter.cpp
@@ -26,4 +26,4 @@ add_executable(agatha-server ${agatha-server_SRCS})
 qt5_use_modules(agatha-server Core Network Sql)
 
 # link lib with Qt libs
-target_link_libraries(agatha-server qjson)
+target_link_libraries(agatha-server)

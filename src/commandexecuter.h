@@ -2,8 +2,9 @@
  * commandexecuter.h
  *
  * This file is part of agathaServer
- * Copyright (C) 2012 Francesco Nwokeka <francesco.nwokeka@gmail.com>
+ * Copyright (C) 2012-2013 Francesco Nwokeka <francesco.nwokeka@gmail.com>
  *
+ * Author Francesco Nwokeka <francesco.nwokeka@gmail.com>
  */
 
 #ifndef COMMANDEXECUTER_H
@@ -65,7 +66,7 @@ private slots:
     void onReplyError(QNetworkReply::NetworkError error);
 
     /** slot called after a WHOIS request */
-    void onWhoIsReady();
+    void onWhoIsFinished();
 
 private:
     Config::CouchDbStruct m_couchDbStruct;

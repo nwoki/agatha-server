@@ -3,7 +3,8 @@
  *
  * This file is part of Agatha
  * Copyright (C) 2012-2013 Francesco Nwokeka <francesco.nwokeka@gmail.com>
- * Author Francesco Nwokeka
+ *
+ * Author Francesco Nwokeka <francesco.nwokeka@gmail.com>
  */
 
 
@@ -13,6 +14,7 @@
 
 #include <QtCore/QDebug>
 #include <QtCore/QObject>
+#include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QRegExp>
 
@@ -97,16 +99,10 @@ void WebService::parseIncomingMessage(QTcpSocket *socket)
 
     qDebug() << "[WebService::parseIncomingMessage] responseParts: " << responseParts;
 
-    // TODO check token + ip validity (discuss this with seven)
-
 //     GET: ("GET", "/", "HTTP/1.1", "User-Agent:", "curl/7.28.1", "Host:", "127.0.0.1:1337", "Accept:", "*/*", "")
     // last item in the list is the json data
-    if (responseParts.first() == "GET") {
-        m_requestHandler->handleGetRequest(responseParts.last().toUtf8(), socket);
-    } else if (responseParts.first() == "POST") {
-        m_requestHandler->handlePostRequest(responseParts.last().toUtf8());
-    } else if (responseParts.first() == "PUT") {
-        m_requestHandler->handlePutRequest(responseParts.last().toUtf8());
+    if (responseParts.first() == "GET" || responseParts.first() == "POST") {
+        m_requestHandler->handleHttpRequest(responseParts.last().toLatin1(), socket);
     }
 }
 

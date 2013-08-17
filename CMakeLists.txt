@@ -23,10 +23,6 @@ else (CMAKE_COMPILER_IS_GNUCXX)
    add_definitions("-std=c++0x")
 endif (CMAKE_COMPILER_IS_GNUCXX)
 
-
-# # qjson
-# add_subdirectory(src/qjson/src)
-
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
 # src

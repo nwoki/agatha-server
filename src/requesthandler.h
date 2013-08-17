@@ -30,9 +30,7 @@ public:
     RequestHandler(Config::CouchDbStruct couchDbStruct, QObject *parent = 0);
     ~RequestHandler();
 
-    void handleGetRequest(const QByteArray &json, QTcpSocket *httpSocket);
-    void handlePostRequest(const QByteArray &json);
-    void handlePutRequest(const QByteArray &json);
+    void handleHttpRequest(const QByteArray &json, QTcpSocket *httpSocket);
 
 private:
     CommandExecuter::Command command(const QJsonObject &jsonObj);  // returns command value taken from json info

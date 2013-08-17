@@ -2,14 +2,16 @@
  * srvAgatha
  *
  * This file is part of srvAgatha
- * Copyright (C) 2012 Francesco Nwokeka <francesco.nwokeka@gmail.com>
+ * Copyright (C) 2012-2013 Francesco Nwokeka <francesco.nwokeka@gmail.com>
  *
  */
 
 #ifndef SERVERAUTHCHECKER_H
 #define SERVERAUTHCHECKER_H
 
-#include <QtSql/QSqlDatabase>
+#include <QtCore/QObject>
+
+// DEPRECATED
 
 /**
  * Class used to determine if a server is associated with the Agatha service. This is done
@@ -17,17 +19,19 @@
  * @author Francesco Nwokeka
  */
 
-class ServerAuthChecker : public QSqlDatabase
+class ServerAuthChecker : public QObject
 {
+    Q_OBJECT
+
 public:
-    ServerAuthChecker();
+    ServerAuthChecker(QObject *parent = 0);
     ~ServerAuthChecker();
 
-    bool isTokenValid(const QString &serverIp, quint16 serverPort, const QString &serverToken);
+    bool isTokenValid(const QString &serverIp, const QString &serverToken);
 
 private:
-    /** opens a connection to the database. Returns connection status */
-    bool openDatabase();
+//     /** opens a connection to the database. Returns connection status */
+//     bool openDatabase();
 };
 
 #endif  // SERVERAUTHCHECKER_H

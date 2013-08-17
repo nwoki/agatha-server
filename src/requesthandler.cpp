@@ -54,54 +54,28 @@ CommandExecuter::Command RequestHandler::command(const QJsonObject &jsonObj)
 }
 
 
-void RequestHandler::handleGetRequest(const QByteArray &json, QTcpSocket *httpSocket)
+void RequestHandler::handleHttpRequest(const QByteArray &json, QTcpSocket *httpSocket)
 {
-    qDebug("[RequestHandler::handleGetRequest]");
-    qDebug() << "[RequestHandler::handlePostRequest] json to handle: " << json;
+    qDebug("[RequestHandler::handleHttpRequest]");
+    qDebug() << "[RequestHandler::handleHttpRequest] json to handle: " << json;
 
     QJsonObject jsonObj = jsonObject(json);
 
-    // security checks
-    if (jsonObj.isEmpty() || jsonObj.value("token").toString().isEmpty()) {
-        // return error 400 (bad request)
-        httpSocket->write("{\"error\":\"400\",\"reason\":\"missing gameserver hash\"");
+    if (jsonObj.isEmpty()) {
+        qDebug("[RequestHandler::handleHttpRequest] ERROR: json obj is empty");
+        CliErrorReporter::printError(CliErrorReporter::NETWORK, CliErrorReporter::WARNING, "[RequestHandler::handleHttpRequest] json obj is empty");
+
+        // send error msg and kill socket
+        // TODO error response
         httpSocket->close();
+        httpSocket->deleteLater();
         return;
     }
 
     CommandExecuter::Command cmd = command(jsonObj);
 
-    m_commandExecuter->execute(CommandExecuter::WHO_IS, "token", "", QVariantMap(), httpSocket);
-}
-
-
-void RequestHandler::handlePostRequest(const QByteArray &json)
-{
-    qDebug("[RequestHandler::handlePostRequest]");
-    qDebug() << "[RequestHandler::handlePostRequest] json to handle: " << json;
-
-    QJsonObject jsonObj = jsonObject(json);
-
-    if (jsonObj.isEmpty()) {
-        return;
-    }
-
-    CommandExecuter::Command cmd = command(jsonObj);
-}
-
-
-void RequestHandler::handlePutRequest(const QByteArray &json)
-{
-    qDebug("[RequestHandler::handlePutRequest]");
-    qDebug() << "[RequestHandler::handlePostRequest] json to handle: " << json;
-
-    QJsonObject jsonObj = jsonObject(json);
-
-    if (jsonObj.isEmpty()) {
-        return;
-    }
-
-    CommandExecuter::Command cmd = command(jsonObj);
+    // TODO send correct data. For now stud data is used for prototyping and getting code done
+    m_commandExecuter->execute(cmd, jsonObj.value("token").toString(), jsonObj.value("game").toString(), QVariantMap(), httpSocket);
 }
 
 

@@ -238,12 +238,10 @@ void Config::loadConfigFile()
 
     endGroup();
 
-#ifdef DEBUG_MODE
     qDebug() << "AGATHA SERVER PORT: " << m_serverConfigStruct.port;
     qDebug() << "COUCHDB : " << m_couchDbStruct.ip;
     qDebug() << "COUCHDB : " << m_couchDbStruct.port;
     qDebug() << "COUCHDB : " << m_couchDbStruct.dbName;
-#endif
 
     // check if the db name is supported
     if (m_allowedDbs.contains(m_couchDbStruct.dbName)) {

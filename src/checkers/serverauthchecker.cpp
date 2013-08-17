@@ -6,6 +6,8 @@
  *
  */
 
+// DEPRECATED
+
 #include "../clierrorreporter.h"
 #include "serverauthchecker.h"
 
@@ -13,66 +15,49 @@
 #include <QtSql/QSqlError>
 #include <QtSql/QSqlQuery>
 
-ServerAuthChecker::ServerAuthChecker()
-    : QSqlDatabase(QSqlDatabase::addDatabase("QMYSQL", "agathaDb"))
+ServerAuthChecker::ServerAuthChecker(QObject *parent)
+    : QObject(parent)
 {
     QHostInfo agathaAuthServer = QHostInfo::fromName("www.agathaproject.org");
 
-    // setup database connection
-    setHostName("localhost"/*agathaAuthServer.addresses().at(0).toString()*/);
-//     setPort(6666);
 
-    /// TODO when aquilinux adds the new database and user
-    setDatabaseName("agatha");
-    setUserName("root"/*"srvAgatha"*/);
-    setPassword("root"/*"cicciopuzza"*/);
-
-    if (!openDatabase()) {
-        std::exit(1);
-    }
 }
 
 ServerAuthChecker::~ServerAuthChecker()
 {
 }
 
-bool ServerAuthChecker::isTokenValid(const QString &serverIp, quint16 serverPort, const QString& serverToken)
-{
-    bool result = false;
-
-    if (!isOpen()) {
-        if (!openDatabase()) {
-            return result;
-        }
-    }
-
-    /// TODO do the sql query and return if there is a record on db or not
-    QString queryStr("select clan from agatha_servers where ip='");
-    queryStr.append(serverIp);
-    queryStr.append("' and port='");
-    queryStr.append(QString::number(serverPort));
-    queryStr.append("' and token='");
-    queryStr.append(serverToken);
-    queryStr.append("';");
-
-    QSqlQuery query(database("agathaDb"));
-
-    if (!query.exec(queryStr)) {
-        CliErrorReporter::printError(CliErrorReporter::DATABASE, CliErrorReporter::ERROR, query.lastError().text());
-    } else if (query.size() == 0 || query.size() == -1) {
-        return false;
-    } else if (query.next()) {
-        result = true;
-    }
-
-#ifdef DEBUG_MODE
-    qDebug() << "[ServerAuthChecker::isTokenValid] QUERY STRING IS: " << queryStr;
-    qDebug() << "[ServerAuthChecker::isTokenValid] CLAN ID IS: " << result;
-#endif
-
-    return result;
-}
-
+// bool ServerAuthChecker::isTokenValid(const QString &serverIp, const QString& serverToken)
+// {
+//     bool result = false;
+// 
+//     /// TODO do the sql query and return if there is a record on db or not
+//     QString queryStr("select clan from agatha_servers where ip='");
+//     queryStr.append(serverIp);
+//     queryStr.append("' and port='");
+//     queryStr.append(QString::number(serverPort));
+//     queryStr.append("' and token='");
+//     queryStr.append(serverToken);
+//     queryStr.append("';");
+// 
+//     QSqlQuery query(database("agathaDb"));
+// 
+//     if (!query.exec(queryStr)) {
+//         CliErrorReporter::printError(CliErrorReporter::DATABASE, CliErrorReporter::ERROR, query.lastError().text());
+//     } else if (query.size() == 0 || query.size() == -1) {
+//         return false;
+//     } else if (query.next()) {
+//         result = true;
+//     }
+// 
+// #ifdef DEBUG_MODE
+//     qDebug() << "[ServerAuthChecker::isTokenValid] QUERY STRING IS: " << queryStr;
+//     qDebug() << "[ServerAuthChecker::isTokenValid] CLAN ID IS: " << result;
+// #endif
+// 
+//     return result;
+// }
+/*
 bool ServerAuthChecker::openDatabase()
 {
     bool isDbOpen;
@@ -92,5 +77,5 @@ bool ServerAuthChecker::openDatabase()
     }
 
     return isDbOpen;
-}
+}*/
 
