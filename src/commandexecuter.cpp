@@ -103,7 +103,7 @@ void CommandExecuter::onReplyError(QNetworkReply::NetworkError error)
     QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
 
     CliErrorReporter::printError(CliErrorReporter::NETWORK, CliErrorReporter::CRITICAL, reply->errorString());
-    m_httpSocketHash.value(reply->property("token").toString())->close();
+    m_httpSocketHash.take(reply->property("token").toString())->close();
     reply->deleteLater();
 }
 
@@ -121,13 +121,23 @@ void CommandExecuter::onWhoIsFinished()
     QString replyToken = reply->property("token").toString();
     QByteArray response = reply->readAll();
 
-    qDebug() << "[CommandExecuter::onWhoIsFinished] : " << response << " from reply with name: " << reply->property("token").toString();
+    // delete what we don't need anymore
+    reply->deleteLater();
+
+    qDebug() << "[CommandExecuter::onWhoIsFinished] : " << response << " from reply with name: " << replyToken;
+
+    // get socket used to communicate with the bot
+    QTcpSocket *httpSocket = m_httpSocketHash.take(replyToken);
+
+    // safety check
+    if (httpSocket == Q_NULLPTR) {
+        CliErrorReporter::printError(CliErrorReporter::APPLICATION, CliErrorReporter::ERROR, "[CommandExecuter::onWhoIsFinished] response socket is null!");
+        return;
+    }
 
     // send couch db info back to the bot
-    m_httpSocketHash.value(reply->property("token").toString())->write(response);
+    httpSocket->write(response);
 
     // close the socket, we don't need it anymore
-    m_httpSocketHash.value(reply->property("token").toString())->close();
-
-    reply->deleteLater();
+    httpSocket->close();
 }
