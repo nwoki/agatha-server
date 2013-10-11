@@ -13,7 +13,7 @@
 #include <QtCore/QObject>
 
 /**
- * Class used to hold all together and control the flow of the application
+ * @brief Class used to hold all together and control the flow of the application
  * @author Francesco Nwokeka
  */
 
@@ -27,9 +27,6 @@ class Core : public QObject
 public:
     Core(const QString &customConfigArg = QString(), QObject *parent = 0);
     ~Core();
-
-private Q_SLOTS:
-    void onConfigReady();       /** called when config class has finished verifying params and databases */
 
 private:
     Config *m_config;

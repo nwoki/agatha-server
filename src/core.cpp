@@ -17,19 +17,11 @@ Core::Core(const QString &customConfigArg, QObject *parent)
     , m_webservice(0)
 {
     // connect config ready signal and start the server.
-    connect(m_config, SIGNAL(ready()), this, SLOT(onConfigReady()));
-
+    connect(m_config, &Config::ready, [this]() {
+        m_webservice = new WebService(m_config->couchDbStruct(), m_config->serverConfigStruct().port, this);
+    });
 }
 
 Core::~Core()
 {
-}
-
-
-void Core::onConfigReady()
-{
-    qDebug("[Core::onConfigReady]");
-
-    // just need the port for now. In case things change, i can still default back to the struct
-    m_webservice = new WebService(m_config->couchDbStruct(), m_config->serverConfigStruct().port, this);
 }
