@@ -18,14 +18,13 @@
  */
 
 class QNetworkAccessManager;
-class QNetworkReply;
 
 class Config : public QSettings
 {
     Q_OBJECT
 
 public:
-    /** struct with server settigns */
+    /** struct with server settings */
     struct ServerConfigStruct
     {
         quint16 port;
@@ -35,10 +34,10 @@ public:
     struct CouchDbStruct
     {
         QString ip;
-        int port;
+        quint16 port;
         QString dbName;
 
-        /** returns url asd ip:port/dbName/ for queries to the database */
+        /** returns url as ip:port/dbName/ for queries to the database */
         QString queryUrl()
         {
             QString url("http://");
@@ -81,7 +80,6 @@ private:
     ServerConfigStruct m_serverConfigStruct;
 
     QNetworkAccessManager *m_netManager;
-    QNetworkReply *m_networkReply;
 
     /**
      * list of allowed game databases agatha supports. These values are hardcoded.

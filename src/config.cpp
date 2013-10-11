@@ -13,6 +13,7 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
+
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
@@ -20,7 +21,6 @@
 Config::Config(const QString &configFile, QObject* parent)
     : QSettings(configFile, QSettings::IniFormat, parent)
     , m_netManager(new QNetworkAccessManager(this))
-    , m_networkReply(0)
 {
     // be sure config file exists
     if (!QFile::exists(fileName())) {
@@ -69,9 +69,10 @@ void Config::checkCouchDb()
 #endif
 
     req.setUrl(QUrl(reqUrl));
-    m_networkReply = m_netManager->get(req);
 
-    connect(m_networkReply, SIGNAL(finished()), this, SLOT(onCheckCouchDbReceived()));
+    QNetworkReply *reply = m_netManager->get(req);
+
+    connect(reply, SIGNAL(finished()), this, SLOT(onCheckCouchDbReceived()));
 }
 
 
@@ -86,7 +87,8 @@ void Config::onCheckCouchDbReceived()
     qDebug("[Config::onCheckCouchDbReceived]");
 
     // extract code
-    int httpCode = m_networkReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    int httpCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
     qDebug() << "[Config::onCheckCouchDbReceived] Code is: " << httpCode;
 
@@ -101,11 +103,11 @@ void Config::onCheckCouchDbReceived()
 
     /// TODO in the not so distant future, load more than one database from the config file.
     /// These will be the databases to handle for agatha. For now it's just UrbanTerror 4.1.1
-    QList<QByteArray> dbs = m_networkReply->readAll().split('"');
+    QList<QByteArray> dbs = reply->readAll().split('"');
     bool found = false;
 
     // don't need the reply any more
-    m_networkReply->deleteLater();
+    reply->deleteLater();
 
     for (int i = 0; i < dbs.count() && !found; i++) {
         if (dbs.at(i) == m_couchDbStruct.dbName) {
@@ -130,7 +132,8 @@ void Config::onCreateDbReceived()
     qDebug("[Config::onCreateDbReceived]");
 
     // extract code
-    int httpCode = m_networkReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    int httpCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
     qDebug() << "[Config::onCreateDbReceived] Code is: " << httpCode;
 
@@ -143,13 +146,13 @@ void Config::onCreateDbReceived()
     } else {
         CliErrorReporter::printError(CliErrorReporter::DATABASE
                                     , CliErrorReporter::ERROR
-                                    , m_networkReply->errorString() + "\n" + m_networkReply->readAll());
+                                    , reply->errorString() + "\n" + reply->readAll());
 
-        m_networkReply->deleteLater();
+        reply->deleteLater();
         std::exit(1);
     }
 
-    m_networkReply->deleteLater();
+    reply->deleteLater();
 }
 
 
@@ -161,7 +164,8 @@ void Config::onNetworkReplyReceived()
 #endif
 
     // extract code
-    int httpCode = m_networkReply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    QNetworkReply *reply = qobject_cast<QNetworkReply*>(sender());
+    int httpCode = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
     qDebug() << "Code is: " << httpCode;
 
@@ -188,9 +192,9 @@ bool Config::prepareCouchDb()
     QNetworkRequest req;
     req.setUrl(QUrl(createDbStr));
 
-    m_networkReply = m_netManager->put(req, createDbStr.toUtf8());
+    QNetworkReply *reply = m_netManager->put(req, createDbStr.toUtf8());
 
-    connect(m_networkReply, SIGNAL(finished()), this, SLOT(onCreateDbReceived()));
+    connect(reply, SIGNAL(finished()), this, SLOT(onCreateDbReceived()));
 }
 
 
@@ -207,7 +211,6 @@ void Config::loadConfigFile()
 #endif
 
     bool ok;
-
     CliErrorReporter::printNotification("[INFO] Loading configuration file..");
 
     // AGATHA SERVER
