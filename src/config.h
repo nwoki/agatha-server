@@ -50,7 +50,7 @@ public:
     /** Constructor
      * @param customConfig custom config file path
      */
-    Config(const QString &configFile = QString("AgathaServerCfg.cfg"), QObject *parent = 0);
+    Config(QNetworkAccessManager *netManager, const QString &configFile = QString("AgathaServerCfg.cfg"), QObject *parent = 0);
     ~Config();
 
     CouchDbStruct couchDbStruct() const;                /** returns CouchDbStruct with couchDB settings */

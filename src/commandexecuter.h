@@ -44,7 +44,7 @@ public:
         WHO_IS
     };
 
-    CommandExecuter(Config::CouchDbStruct couchDbStruct, QObject *parent = 0);
+    CommandExecuter(Config::CouchDbStruct couchDbStruct, QNetworkAccessManager *netManager, QObject *parent = 0);
     ~CommandExecuter();
 
     /**

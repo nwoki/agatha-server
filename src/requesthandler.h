@@ -27,7 +27,7 @@ class RequestHandler : public QObject
     Q_OBJECT
 
 public:
-    RequestHandler(Config::CouchDbStruct couchDbStruct, QObject *parent = 0);
+    RequestHandler(Config::CouchDbStruct couchDbStruct, QNetworkAccessManager *netManager, QObject *parent = 0);
     ~RequestHandler();
 
     void handleHttpRequest(const QByteArray &json, QTcpSocket *httpSocket);

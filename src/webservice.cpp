@@ -20,10 +20,9 @@
 
 #include <QtNetwork/QTcpSocket>
 
-// WebService::WebService(Config::ServerConfigStruct configStruct, QObject *parent)
-WebService::WebService(Config::CouchDbStruct couchDbStruct, quint16 port, QObject *parent)
+WebService::WebService(Config::CouchDbStruct couchDbStruct, QNetworkAccessManager *netManager, quint16 port, QObject *parent)
     : QTcpServer(parent)
-    , m_requestHandler(new RequestHandler(couchDbStruct, this))
+    , m_requestHandler(new RequestHandler(couchDbStruct, netManager, this))
 {
     qDebug("[WebService::WebService]");
 
@@ -32,7 +31,7 @@ WebService::WebService(Config::CouchDbStruct couchDbStruct, quint16 port, QObjec
 
     // TODO check port binding validity?
 //     if (m_port < 1024) {
-//         
+//
 //     }
 
     // TODO handle binding error

@@ -20,9 +20,9 @@
 #include <QtNetwork/QTcpSocket>
 
 
-RequestHandler::RequestHandler(Config::CouchDbStruct couchDbStruct, QObject *parent)
+RequestHandler::RequestHandler(Config::CouchDbStruct couchDbStruct, QNetworkAccessManager *netManager, QObject *parent)
     : QObject(parent)
-    , m_commandExecuter(new CommandExecuter(couchDbStruct, this))
+    , m_commandExecuter(new CommandExecuter(couchDbStruct, netManager, this))
 {
 }
 

@@ -18,9 +18,9 @@
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
 
-Config::Config(const QString &configFile, QObject* parent)
+Config::Config(QNetworkAccessManager *netManager, const QString &configFile, QObject* parent)
     : QSettings(configFile, QSettings::IniFormat, parent)
-    , m_netManager(new QNetworkAccessManager(this))
+    , m_netManager(netManager)
 {
     // be sure config file exists
     if (!QFile::exists(fileName())) {

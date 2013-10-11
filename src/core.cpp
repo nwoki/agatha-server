@@ -11,14 +11,19 @@
 #include "core.h"
 #include "webservice.h"
 
+#include <QtNetwork/QNetworkAccessManager>
+
 Core::Core(const QString &customConfigArg, QObject *parent)
     : QObject(parent)
-    , m_config(new Config(customConfigArg, this))
+    , m_netManager(new QNetworkAccessManager(this))
+    , m_config(0)
     , m_webservice(0)
 {
+    m_config = new Config(m_netManager, customConfigArg, this);
+
     // connect config ready signal and start the server.
     connect(m_config, &Config::ready, [this]() {
-        m_webservice = new WebService(m_config->couchDbStruct(), m_config->serverConfigStruct().port, this);
+        m_webservice = new WebService(m_config->couchDbStruct(), m_netManager, m_config->serverConfigStruct().port, this);
     });
 }
 

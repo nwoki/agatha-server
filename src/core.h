@@ -19,6 +19,7 @@
 
 class Config;
 class WebService;
+class QNetworkAccessManager;
 
 class Core : public QObject
 {
@@ -29,6 +30,7 @@ public:
     ~Core();
 
 private:
+    QNetworkAccessManager *m_netManager;
     Config *m_config;
     WebService *m_webservice;
 };

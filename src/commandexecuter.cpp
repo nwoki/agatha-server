@@ -18,11 +18,11 @@
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QTcpSocket>
 
-CommandExecuter::CommandExecuter(Config::CouchDbStruct couchDbStruct, QObject *parent)
+CommandExecuter::CommandExecuter(Config::CouchDbStruct couchDbStruct, QNetworkAccessManager *netManager, QObject *parent)
     : QObject(parent)
     , m_couchDbStruct(couchDbStruct)
 //     , m_geoIpChecker(new GeoIpChecker)
-    , m_networkManager(new QNetworkAccessManager(this))
+    , m_networkManager(netManager)
 {
 }
 
