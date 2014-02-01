@@ -17,7 +17,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
         message(WARNING "C++0x activated. If you get any errors update to a compiler which fully supports C++11")
         add_definitions("-std=gnu++0x")
    else ()
-        message(FATAL_ERROR "C++11 needed. Therefore a gcc compiler with a version higher than 4.3 is needed.")   
+        message(FATAL_ERROR "C++11 needed. Therefore a gcc compiler with a version higher than 4.3 is needed.")
    endif()
 else (CMAKE_COMPILER_IS_GNUCXX)
    add_definitions("-std=c++0x")
@@ -27,6 +27,9 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
 # src
 add_subdirectory(src)
+
+# modules
+add_subdirectory(modules/restful)
 
 # test app for sending custom text to srv
 # add_subdirectory(testapp)

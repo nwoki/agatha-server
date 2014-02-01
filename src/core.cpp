@@ -23,7 +23,7 @@ Core::Core(const QString &customConfigArg, QObject *parent)
 
     // connect config ready signal and start the server.
     connect(m_config, &Config::ready, [this]() {
-        m_webservice = new WebService(m_config->couchDbStruct(), m_netManager, m_config->serverConfigStruct().port, this);
+        m_webservice = new WebService(m_config->couchDbStruct(), m_config->serverConfigStruct().port, this);
     });
 }
 

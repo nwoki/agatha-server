@@ -1,3 +1,5 @@
+include_directories(${CMAKE_SOURCE_DIR}/modules)
+
 set(agatha-server_SRCS
     checkers/geoipchecker.cpp
 #     checkers/serverauthchecker.cpp
@@ -26,4 +28,4 @@ add_executable(agatha-server ${agatha-server_SRCS})
 qt5_use_modules(agatha-server Core Network Sql)
 
 # link lib with Qt libs
-target_link_libraries(agatha-server)
+target_link_libraries(agatha-server restful)
