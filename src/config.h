@@ -10,7 +10,7 @@
 #define CONFIG_H
 
 #include <QtCore/QDebug>
-#include <QtCore/QSettings>
+#include <QtCore/QObject>
 
 /**
  * Class used to fetch config data for the server settings
@@ -19,7 +19,7 @@
 
 class QNetworkAccessManager;
 
-class Config : public QSettings
+class Config : public QObject
 {
     Q_OBJECT
 
@@ -41,7 +41,6 @@ public:
         QString queryUrl()
         {
             QString url("http://");
-
             url += ip + ":" + QString::number(port) + "/" + dbName + "/";
             return url;
         }
@@ -50,7 +49,7 @@ public:
     /** Constructor
      * @param customConfig custom config file path
      */
-    Config(QNetworkAccessManager *netManager, const QString &configFile = QString("AgathaServerCfg.cfg"), QObject *parent = 0);
+    Config(QNetworkAccessManager *netManager, QObject *parent = 0);
     ~Config();
 
     CouchDbStruct couchDbStruct() const;                /** returns CouchDbStruct with couchDB settings */

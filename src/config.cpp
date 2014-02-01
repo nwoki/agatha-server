@@ -13,27 +13,15 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
+#include <QtCore/QSettings>
 
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
 
-Config::Config(QNetworkAccessManager *netManager, const QString &configFile, QObject* parent)
-    : QSettings(configFile, QSettings::IniFormat, parent)
-    , m_netManager(netManager)
+Config::Config(QNetworkAccessManager *netManager, QObject* parent)
+    : m_netManager(netManager)
 {
-    // be sure config file exists
-    if (!QFile::exists(fileName())) {
-        QString errorMsg("Can't find config file : '");
-        errorMsg += fileName() +  "'";
-
-        CliErrorReporter::printError(CliErrorReporter::APPLICATION
-                                    , CliErrorReporter::CRITICAL
-                                    , errorMsg);
-        /// TODO define different error status?
-        std::exit(1);
-    }
-
     // populate the allowed databases
     m_allowedDbs.append("urbanterror_4_1_1");   // urban terror 4.1.1
 
@@ -213,9 +201,11 @@ void Config::loadConfigFile()
     bool ok;
     CliErrorReporter::printNotification("[INFO] Loading configuration file..");
 
+    QSettings pluginSettings(QSettings::IniFormat, QSettings::UserScope, "GameZoo", "AgathaServer");
+
     // AGATHA SERVER
-    beginGroup("server");
-    int srvPort = value("port").toInt(&ok);
+    pluginSettings.beginGroup("server");
+    int srvPort = pluginSettings.value("port").toInt(&ok);
 
     if (!ok) {
         CliErrorReporter::printError(CliErrorReporter::APPLICATION, CliErrorReporter::WARNING, "Invalid server port. Using default (1337)");
@@ -223,13 +213,13 @@ void Config::loadConfigFile()
     }
 
     m_serverConfigStruct.port = srvPort;
-    endGroup();
+    pluginSettings.endGroup();
 
     // COUCHDB
-    beginGroup("agathaNode");
+    pluginSettings.beginGroup("agathaNode");
 
-    m_couchDbStruct.ip = value("ip").toString();
-    int dbPort = value("port").toInt(&ok);
+    m_couchDbStruct.ip = pluginSettings.value("ip").toString();
+    int dbPort = pluginSettings.value("port").toInt(&ok);
 
     if (!ok) {
         CliErrorReporter::printError(CliErrorReporter::APPLICATION, CliErrorReporter::WARNING, "Invalid couchDB port. Using default (5984)");
@@ -237,9 +227,9 @@ void Config::loadConfigFile()
     }
 
     m_couchDbStruct.port = dbPort;
-    m_couchDbStruct.dbName = value("databaseName").toString();
+    m_couchDbStruct.dbName = pluginSettings.value("databaseName").toString();
 
-    endGroup();
+    pluginSettings.endGroup();
 
     qDebug() << "AGATHA SERVER PORT: " << m_serverConfigStruct.port;
     qDebug() << "COUCHDB : " << m_couchDbStruct.ip;

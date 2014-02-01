@@ -19,7 +19,7 @@ Core::Core(const QString &customConfigArg, QObject *parent)
     , m_config(0)
     , m_webservice(0)
 {
-    m_config = new Config(m_netManager, customConfigArg, this);
+    m_config = new Config(m_netManager, this);
 
     // connect config ready signal and start the server.
     connect(m_config, &Config::ready, [this]() {
