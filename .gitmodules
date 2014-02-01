@@ -1,0 +1,3 @@
+[submodule "modules/restful"]
+	path = modules/restful
+	url = git@github.com:nwoki/restful.git
