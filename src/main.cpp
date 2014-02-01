@@ -2,7 +2,7 @@
  * main.cpp
  *
  * This file is part of agathaServer
- * Copyright (C) 2012 Francesco Nwokeka <francesco.nwokeka@gmail.com>
+ * Copyright (C) 2012-2014 Francesco Nwokeka <francesco.nwokeka@gmail.com>
  *
  */
 
@@ -18,11 +18,10 @@ int main(int argc, char *argv[])
     QString customConfig(argv[1]);
 
     /**
-     * TODO
      * The Starter object starts everything. After checking that all is ok (config),
      * it starts the Server. Otherwise it exits
      */
-    Core *core = new Core(customConfig);
+    Core core(customConfig);
 
 //     CommandExecuter *cmdExe = new CommandExecuter(agathaConfig->couchDbStruct());
 
